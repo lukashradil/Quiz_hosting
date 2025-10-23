@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mount Everest Rubbish Quiz</title>
+    <!-- Load Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the quiz */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Style for the correct answer button */
+        .option-btn.correct {
+            background-color: #22c55e; /* Tailwind green-500 */
+            color: white;
+            border-color: #16a34a; /* Tailwind green-600 */
+        }
+        
+        /* Style for the incorrect answer button */
+        .option-btn.incorrect {
+            background-color: #ef4444; /* Tailwind red-500 */
+            color: white;
+            border-color: #dc2626; /* Tailwind red-600 */
+        }
+
+        /* Style for showing the correct answer when user is wrong */
+        .option-btn.was-correct {
+            background-color: #d1fae5; /* Tailwind green-100 */
+            border-color: #22c55e; /* Tailwind green-500 */
+            color: #166534; /* Tailwind green-800 */
+        }
+
+        /* Disabled state for buttons after an answer is selected */
+        .option-btn:disabled {
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+
+        /* Hide elements by default */
+        #result-container, #submit-btn {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-2xl">
+        
+        <!-- Quiz Header -->
+        <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">
+            Mount Everest & Rubbish Quiz
+        </h1>
+
+        <!-- Quiz Container -->
+        <div id="quiz-container">
+            <div id="question-counter" class="text-sm text-gray-500 mb-2 text-center"></div>
+            <h2 id="question" class="text-xl sm:text-2xl font-semibold text-gray-900 mb-6 min-h-[60px]">
+                Question text will load here...
+            </h2>
+            
+            <!-- Options Grid -->
+            <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Option buttons will be dynamically inserted here -->
+            </div>
+            
+            <!-- Feedback Message -->
+            <p id="feedback" class="mt-5 text-lg font-medium text-center min-h-[30px]"></p>
+        </div>
+
+        <!-- Result Container (hidden by default) -->
+        <div id="result-container" class="text-center">
+            <h2 id="result-title" class="text-3xl font-bold text-gray-900 mb-4">Quiz Complete!</h2>
+            <p id="result-text" class="text-xl text-gray-700 mb-6">You scored 0 out of 0.</p>
+            <button id="restart-btn" class="w-full sm:w-auto bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors duration-200">
+                Restart Quiz
+            </button>
+        </div>
+
+        <!-- Next/Submit Button (hidden by default) -->
+        <button id="submit-btn" class="w-full bg-blue-600 text-white mt-6 p-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors duration-200">
+            Next Question
+        </button>
+
+    </div>
+
+    <!-- JavaScript for Quiz Logic -->
+    <script>
+        // --- 1. QUIZ DATA ---
+        // All questions based on the article and vocabulary list
+        const quizData = [
+            // Article Questions
+            {
+                question: "Who is the mountain climber featured in the article?",
+                options: ["Sir Edmund Hillary", "Ken Noguchi", "Tenzing Norgay", "Lewis Gordon Pugh"],
+                correct: "Ken Noguchi"
+            },
+            {
+                question: "What is Ken Noguchi's primary reason for climbing Mount Everest?",
+                options: ["For fun and adventure", "To break a speed record", "To collect rubbish", "To guide other climbers"],
+                correct: "To collect rubbish"
+            },
+            {
+                question: "What nationality is Ken Noguchi?",
+                options: ["Nepali", "Korean", "New Zealander", "Japanese"],
+                correct: "Japanese"
+            },
+            {
+                question: "What is Mount Everest's unfortunate nickname, according to the article?",
+                options: ["The Top of the World", "The Great White Peak", "The World's Highest Rubbish Dump", "The Icy Challenge"],
+                correct: "The World's Highest Rubbish Dump"
+            },
+            {
+                question: "Why doesn't the rubbish decompose (break down) on the mountain?",
+                options: ["It's buried under the snow", "The air is too thin", "It's too cold", "There is no sunlight"],
+                correct: "It's too cold"
+            },
+            {
+                question: "Who were the first two people to climb Mount Everest in 1953?",
+                options: ["Ken Noguchi and his team", "Sir Edmund Hillary and Tenzing Norgay", "Only Sir Edmund Hillary", "It is unknown"],
+                correct: "Sir Edmund Hillary and Tenzing Norgay"
+            },
+            {
+                question: "Which of these is a LARGE item of rubbish found by Ken's team?",
+                options: ["Drinks cans", "Plastic bags", "Empty oxygen bottles", "Food packaging"],
+                correct: "Empty oxygen bottles"
+            },
+            {
+                question: "How much rubbish has Ken's team collected so far?",
+                options: ["Over 500 kg", "About 50 tonnes", "Less than 100 kg", "Exactly 1953 kg"],
+                correct: "Over 500 kg"
+            },
+            {
+                question: "How much OLD rubbish does Ken think is *still* on the mountain?",
+                options: ["None, it's all clean", "About 500 kg", "Over 1000 tonnes", "About 50 tonnes"],
+                correct: "About 50 tonnes"
+            },
+            {
+                question: "How has Ken tried to make people aware of the problem?",
+                options: ["By writing a book", "By giving TV interviews", "By putting rubbish on display in Japan and Korea", "By swimming in the Antarctic"],
+                correct: "By putting rubbish on display in Japan and Korea"
+            },
+            {
+                question: "What rule is in place for climbers *today* to prevent more rubbish?",
+                options: ["They must pay a fine if they leave rubbish", "They are not allowed to bring tents", "They can only climb in small groups", "They must use reusable water bottles"],
+                correct: "They must pay a fine if they leave rubbish"
+            },
+            // Rubbish Vocabulary Questions
+            {
+                question: "What do you call the metal container for a soft drink?",
+                options: ["A plastic bottle", "A foil tray", "A drinks can", "A polystyrene cup"],
+                correct: "A drinks can"
+            },
+            {
+                question: "What is the wrapper from a single piece of candy called?",
+                options: ["A sweet wrapper", "A crisp packet", "Food packaging", "A paper tissue"],
+                correct: "A sweet wrapper"
+            },
+            {
+                question: "What do you call the empty bag that potato chips come in?",
+                options: ["A plastic bag", "A crisp packet", "A foil tray", "A sweet wrapper"],
+                correct: "A crisp packet"
+            },
+            {
+                question: "What is the lightweight, white plastic cup often used for hot drinks called?",
+                options: ["A drinks can", "A plastic bottle", "A polystyrene cup", "A cardboard box"],
+                correct: "A polystyrene cup"
+            },
+            {
+                question: "What do you call the object used to seal the top of a plastic bottle?",
+                options: ["A bottle top", "A sweet wrapper", "A drinks can", "Chewing gum"],
+                correct: "A bottle top"
+            },
+            {
+                question: "What is the general term for the bags, boxes, and wrappers that food is sold in?",
+                options: ["A foil tray", "Food packaging", "A cardboard box", "A plastic bag"],
+                correct: "Food packaging"
+            },
+            {
+                question: "What do you call the disposable, soft paper you use to wipe your nose?",
+                options: ["A sweet wrapper", "A paper tissue", "Chewing gum", "A crisp packet"],
+                correct: "A paper tissue"
+            },
+            {
+                question: "What do you call the disposable, shiny metal tray used for takeaway food?",
+                options: ["A foil tray", "A polystyrene cup", "A drinks can", "A cardboard box"],
+                correct: "A foil tray"
+            },
+            {
+                question: "What material is a shipping box, like the one labeled 'k' in the book, made from?",
+                options: ["Plastic", "Polystyrene", "Foil", "Cardboard"],
+                correct: "Cardboard"
+            }
+        ];
+
+        // --- 2. DOM ELEMENT REFERENCES ---
+        const quizContainer = document.getElementById('quiz-container');
+        const questionCounterEl = document.getElementById('question-counter');
+        const questionEl = document.getElementById('question');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackEl = document.getElementById('feedback');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultContainer = document.getElementById('result-container');
+        const resultTextEl = document.getElementById('result-text');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // --- 3. QUIZ STATE VARIABLES ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answerSelected = false;
+
+        // --- 4. FUNCTIONS ---
+
+        /**
+         * Loads the current question and its options onto the page.
+         */
+        function loadQuestion() {
+            answerSelected = false;
+            // Clear previous options and feedback
+            optionsContainer.innerHTML = '';
+            feedbackEl.textContent = '';
+            feedbackEl.className = 'mt-5 text-lg font-medium text-center min-h-[30px]';
+            
+            // Hide the 'Next' button
+            submitBtn.style.display = 'none';
+
+            // Get the current question data
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            // Display the question and counter
+            questionEl.textContent = currentQuestion.question;
+            questionCounterEl.textContent = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+
+            // Create and display the option buttons
+            currentQuestion.options.forEach(optionText => {
+                const button = document.createElement('button');
+                button.textContent = optionText;
+                button.className = 'option-btn w-full p-4 rounded-lg border-2 border-gray-300 text-left text-gray-700 font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-150';
+                button.onclick = () => selectAnswer(button, optionText, currentQuestion.correct);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        /**
+         * Handles logic when a user clicks an answer option.
+         */
+        function selectAnswer(selectedButton, selectedAnswer, correctAnswer) {
+            if (answerSelected) return; // Prevent multiple clicks
+            answerSelected = true;
+
+            // Disable all option buttons
+            Array.from(optionsContainer.children).forEach(btn => {
+                btn.disabled = true;
+            });
+
+            // Check if the answer is correct
+            if (selectedAnswer === correctAnswer) {
+                score++;
+                selectedButton.classList.add('correct');
+                feedbackEl.textContent = 'Correct!';
+                feedbackEl.classList.add('text-green-600');
+            } else {
+                selectedButton.classList.add('incorrect');
+                feedbackEl.innerHTML = `Wrong. The correct answer was: <br><strong>${correctAnswer}</strong>`;
+                feedbackEl.classList.add('text-red-600');
+
+                // Highlight the correct answer
+                Array.from(optionsContainer.children).forEach(btn => {
+                    if (btn.textContent === correctAnswer) {
+                        btn.classList.add('was-correct');
+                    }
+                });
+            }
+
+            // Show the 'Next' or 'Finish' button
+            if (currentQuestionIndex < quizData.length - 1) {
+                submitBtn.textContent = 'Next Question';
+            } else {
+                submitBtn.textContent = 'Finish Quiz';
+            }
+            submitBtn.style.display = 'block';
+        }
+
+        /**
+         * Shows the final results of the quiz.
+         */
+        function showResults() {
+            quizContainer.style.display = 'none';
+            submitBtn.style.display = 'none';
+            resultContainer.style.display = 'block';
+
+            resultTextEl.textContent = `You scored ${score} out of ${quizData.length}!`;
+            
+            let title = 'Good Job!';
+            if (score / quizData.length < 0.5) title = 'Keep Practicing!';
+            else if (score / quizData.length >= 0.9) title = 'Excellent Work!';
+            
+            document.getElementById('result-title').textContent = title;
+        }
+
+        /**
+         * Resets the quiz state and starts over.
+         */
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            resultContainer.style.display = 'none';
+            quizContainer.style.display = 'block';
+            loadQuestion();
+        }
+
+        // --- 5. EVENT LISTENERS ---
+
+        // 'Next Question' / 'Finish Quiz' button
+        submitBtn.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        });
+
+        // 'Restart Quiz' button
+        restartBtn.addEventListener('click', restartQuiz);
+
+        // --- 6. INITIALIZE QUIZ ---
+        loadQuestion();
+
+    </script>
+</body>
+</html>
