@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Grammar Quiz - 5A</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- Load Tone.js for sound effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js" xintegrity="sha512-T/Trm80C3/S/L2bANHj3YoI/sgMabdQvoV2/v2ECZklEtHjI2yPAG2hFXs/GGtb2xyKD8KXy0GPM/xItc/y+mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        /*
+         * --- GLOBAL STYLES ---
+         * Font: 'Orbitron' for titles, 'Share Tech Mono' for body
+         * Palette: Dark blue, sky blue, light grey, and pink accent
+         */
+        :root {
+            --bg-color: #0f172a; /* Dark Slate Blue */
+            --primary-color: #38bdf8; /* Sky Blue */
+            --secondary-color: #e2e8f0; /* Light Slate Grey */
+            --text-color: #e0e0ff;
+            --accent-color: #f472b6; /* Pink */
+            --correct-glow: #4ade80; /* Green */
+            --incorrect-glow: #f87171; /* Red */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            font-size: 1.1rem;
+        }
+        
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-align: center;
+            color: var(--primary-color);
+            text-shadow: 0 0 5px var(--primary-color);
+            margin-bottom: 2rem;
+        }
+
+        /* --- Score Widget --- */
+        .score-widget {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        #score-value {
+            display: inline-block;
+            color: var(--correct-glow);
+            font-weight: 700;
+            transition: transform 0.2s ease-out;
+        }
+        #score-value.pop {
+            transform: scale(1.4);
+        }
+
+        /*
+         * --- QUIZ CONTAINER & ELEMENTS ---
+         */
+        .quiz-container {
+            background-color: #1e293b; /* Lighter Slate */
+            border: 2px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 700px;
+            box-shadow: 
+                0 0 15px var(--primary-color, 0.5),
+                inset 0 0 10px var(--accent-color, 0.3);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        #question-title {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        #quiz-area {
+            min-height: 200px;
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- Controls & Results --- */
+        .controls {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            height: 40px; /* Reserve space for button */
+        }
+
+        .control-btn {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        #results-container {
+            text-align: center;
+        }
+
+        #results-text {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 2rem;
+        }
+
+        /* --- Utility Classes --- */
+        .hidden {
+            display: none;
+        }
+        
+        /* * --- QUESTION TYPE STYLES --- 
+         */
+         
+        /* --- 1. Multiple Choice --- */
+        #options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        .option-btn {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            background-color: transparent;
+            color: var(--text-color);
+            border: 2px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option-btn:not(:disabled):hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-glow);
+            border-color: var(--correct-glow);
+            color: var(--bg-color);
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--correct-glow);
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-glow);
+            border-color: var(--incorrect-glow);
+            color: var(--bg-color);
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--incorrect-glow);
+        }
+        
+        /* --- 2. Sentence Order --- */
+        .sentence-builder {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .word-bank, .sentence-dropzone {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            min-height: 50px;
+        }
+
+        .word-bank {
+            background-color: rgba(0,0,0,0.2);
+            border: 2px dashed var(--secondary-color);
+        }
+        
+        .sentence-dropzone {
+            background-color: rgba(255,255,255,0.05);
+            border: 2px solid var(--primary-color);
+        }
+        
+        .word-block {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            background-color: var(--secondary-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            /* Added transition for the FLIP animation */
+            transition: transform 0.4s ease-out;
+        }
+        
+        .word-block:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 5px var(--secondary-color);
+        }
+        
+        .sentence-builder button {
+            align-self: flex-start; /* 'Check' button */
+        }
+        
+        /* --- 3. Matching --- */
+        .matching-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .match-column {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .match-item {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            background-color: transparent;
+            color: var(--text-color);
+            border: 2px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .match-item:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+        
+        .match-item.selected {
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            border-color: var(--primary-color);
+        }
+        
+        .match-item.matched {
+            background-color: var(--correct-glow);
+            border-color: var(--correct-glow);
+            color: var(--bg-color);
+            opacity: 0.7;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <main class="quiz-container">
+        <h1>// A1: [Can/Can't] Quiz //</h1>
+
+        <!-- Score Widget -->
+        <div id="score-widget" class="score-widget">
+            Score: <span id="score-value">0</span>
+        </div>
+
+        <!-- Quiz Questions Area -->
+        <div id="quiz-content">
+            <h2 id="question-title">Loading question...</h2>
+            <div id="quiz-area">
+                <!-- Dynamic content (MC, Order, Match) goes here -->
+            </div>
+            
+            <div class="controls">
+                <button id="next-btn" class="control-btn hidden">Next ></button>
+            </div>
+        </div>
+
+        <!-- Quiz Results Area -->
+        <div id="results-container" class="hidden">
+            <p id="results-text">Calculating your score...</p>
+            <button id="restart-btn" class="control-btn">> Restart Quiz <</button>
+        </div>
+    </main>
+
+    <script>
+        // --- QUIZ DATA ---
+        // New format supports different question types
+        const questions = [
+            {
+                type: 'mc', // Multiple Choice
+                question: "The sign says 'PRIVATE'. You ______ go in there.",
+                options: ["can", "can't", "are"],
+                answer: "can't" // Tests permission
+            },
+            {
+                type: 'mc', // Multiple Choice
+                question: "A: ______ you speak Spanish?\nB: Yes, just a little.",
+                options: ["Do", "Are", "Can"],
+                answer: "Can" // Tests ability
+            },
+            {
+                type: 'order', // Sentence Order
+                question: "Put the words in the correct order to make a question.",
+                words: ["Can", "you", "play", "chess?"],
+                answer: "Can you play chess?" // Tests ability (question) + vocab
+            },
+            {
+                type: 'mc', // Multiple Choice
+                question: "A: I'm lost. ______ you help me, please?\nB: Of course.",
+                options: ["Are", "Do", "Can"],
+                answer: "Can" // Tests request (Can you...?)
+            },
+            {
+                type: 'order', // Sentence Order
+                question: "Put the words in the correct order.",
+                words: ["I", "can't", "remember", "his", "name."],
+                answer: "I can't remember his name." // Tests ability (negative) + vocab
+            },
+            {
+                type: 'match', // Matching
+                question: "Match the people to what they can or can't do.",
+                columnA: [
+                    { text: "Maria", pair: 1 },
+                    { text: "David", pair: 2 },
+                    { text: "My little brother", pair: 3 }
+                ],
+                columnB: [
+                    { text: "He can't drive a car.", pair: 3 }, // Tests ability + vocab
+                    { text: "She can paint amazing pictures.", pair: 1 }, // Tests ability + vocab
+                    { text: "He can meet us for coffee.", pair: 2 } // Tests possibility + vocab
+                ]
+            },
+            {
+                type: 'mc', // Multiple Choice
+                question: "It's a beautiful day. We ______ swim in the sea.",
+                options: ["can", "can't", "are"],
+                answer: "can" // Tests possibility + vocab
+            },
+            {
+                type: 'mc', // Multiple Choice
+                question: "A: This door is locked. ______ I use your key?\nB: Yes, of course.",
+                options: ["Do", "Can", "Am"],
+                answer: "Can" // Tests request (Can I...?)
+            },
+            {
+                type: 'mc', // Multiple Choice
+                question: "My car is broken. It ______ move.",
+                options: ["can", "can't", "isn't"],
+                answer: "can't" // Tests ability
+            },
+            {
+                type: 'order', // Sentence Order
+                question: "Put the words in the correct order.",
+                words: ["We", "can", "meet", "tomorrow."],
+                answer: "We can meet tomorrow." // Tests possibility + vocab
+            }
+        ];
+
+        // --- SCRIPT VARIABLES ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let soundsReady = false;
+
+        // --- DOM ELEMENT REFERENCES ---
+        const quizContent = document.getElementById('quiz-content');
+        const questionTitle = document.getElementById('question-title');
+        const quizArea = document.getElementById('quiz-area');
+        const nextButton = document.getElementById('next-btn');
+        const resultsContainer = document.getElementById('results-container');
+        const resultsText = document.getElementById('results-text');
+        const restartButton = document.getElementById('restart-btn');
+        const scoreWidget = document.getElementById('score-widget');
+        const scoreValue = document.getElementById('score-value');
+
+        // --- SOUND EFFECTS ---
+        let correctSound, incorrectSound, clickSound;
+
+        // Initialize sounds after first user interaction (e.g., first click)
+        function setupSounds() {
+            if (soundsReady) return;
+            Tone.start(); // Start audio context
+            
+            correctSound = new Tone.Synth({
+                oscillator: { type: 'sine' },
+                envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.2 }
+            }).toDestination();
+            
+            incorrectSound = new Tone.Synth({
+                oscillator: { type: 'square' },
+                envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.2 }
+            }).toDestination();
+            
+            clickSound = new Tone.Synth({
+                oscillator: { type: 'triangle' },
+                envelope: { attack: 0.005, decay: 0.05, sustain: 0, release: 0.1 }
+            }).toDestination();
+            
+            soundsReady = true;
+        }
+        
+        function playSound(sound, note, duration = '16n') {
+            if (soundsReady && sound) {
+                sound.triggerAttackRelease(note, duration);
+            }
+        }
+        
+        // Add a general click listener to init sounds
+        document.body.addEventListener('click', setupSounds, { once: true });
+
+
+        // --- MAIN QUIZ FUNCTIONS ---
+
+        /**
+         * Updates the score widget with an animation
+         */
+        function updateScore() {
+            scoreValue.innerText = score;
+            scoreValue.classList.add('pop');
+            // Remove class after animation to allow re-triggering
+            setTimeout(() => {
+                scoreValue.classList.remove('pop');
+            }, 200);
+        }
+
+        /**
+         * Main router function to show the correct question type
+         */
+        function showQuestion() {
+            resetState();
+            const question = questions[currentQuestionIndex];
+            questionTitle.innerHTML = question.question.replace(/\n/g, '<br>');
+
+            switch (question.type) {
+                case 'mc':
+                    showMultipleChoice(question);
+                    break;
+                case 'order':
+                    showSentenceOrder(question);
+                    break;
+                case 'match':
+                    showMatching(question);
+                    break;
+            }
+        }
+
+        /**
+         * Resets the quiz area and next button
+         */
+        function resetState() {
+            nextButton.classList.add('hidden');
+            quizArea.innerHTML = ''; // Clear previous question
+            // Remove any leftover animation classes
+            quizContent.classList.remove('shake');
+        }
+
+        /**
+         * Handles the 'Next' button click
+         */
+        function handleNextButton() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        /**
+         * Shows the final quiz results
+         */
+        function showResults() {
+            quizContent.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            scoreWidget.classList.add('hidden'); // Hide score widget on results
+            
+            let feedback = "ANALYSIS COMPLETE:";
+            const percentage = Math.round((score / questions.length) * 100);
+
+            if (percentage > 80) {
+                feedback += "<br>Excellent! Your grammar is strong.";
+            } else if (percentage > 50) {
+                feedback += "<br>Good job. You have a solid understanding.";
+            } else {
+                feedback += "<br>Nice try. Review the lesson and try again!";
+            }
+            resultsText.innerHTML = `You scored ${score} out of ${questions.length}.<br><br>${feedback}`;
+        }
+
+        /**
+         * Resets the quiz to the beginning
+         */
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            resultsContainer.classList.add('hidden');
+            quizContent.classList.remove('hidden');
+            scoreWidget.classList.remove('hidden'); // Show score widget again
+            scoreValue.innerText = '0'; // Reset score text
+            showQuestion();
+        }
+
+        // --- QUESTION TYPE 1: MULTIPLE CHOICE ---
+
+        function showMultipleChoice(question) {
+            const optionsContainer = document.createElement('div');
+            optionsContainer.id = 'options-container';
+            
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.innerText = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => checkMCAnswer(button, option, question.answer));
+                optionsContainer.appendChild(button);
+            });
+            quizArea.appendChild(optionsContainer);
+        }
+
+        function checkMCAnswer(selectedButton, selectedOption, correctOption) {
+            // Disable all option buttons
+            const buttons = quizArea.querySelectorAll('.option-btn');
+            buttons.forEach(button => {
+                button.disabled = true;
+                if (button.innerText === correctOption) {
+                    button.classList.add('correct');
+                }
+            });
+
+            if (selectedOption === correctOption) {
+                score++;
+                updateScore(); // Update score
+                playSound(correctSound, 'C5');
+                selectedButton.classList.add('correct');
+            } else {
+                playSound(incorrectSound, 'C3');
+                quizContent.classList.add('shake');
+                selectedButton.classList.add('incorrect');
+            }
+            nextButton.classList.remove('hidden');
+        }
+        
+        // --- QUESTION TYPE 2: SENTENCE ORDER ---
+        
+        function showSentenceOrder(question) {
+            const container = document.createElement('div');
+            container.className = 'sentence-builder';
+            
+            const wordBank = document.createElement('div');
+            wordBank.className = 'word-bank';
+            
+            const dropzone = document.createElement('div');
+            dropzone.className = 'sentence-dropzone';
+            
+            const checkButton = document.createElement('button');
+            checkButton.innerText = 'Check';
+            checkButton.className = 'control-btn';
+            
+            // Shuffle and create word blocks
+            shuffleArray(question.words).forEach(word => {
+                const wordBlock = document.createElement('button');
+                wordBlock.innerText = word;
+                wordBlock.className = 'word-block';
+                wordBlock.addEventListener('click', () => moveWord(wordBlock, wordBank, dropzone));
+                wordBank.appendChild(wordBlock);
+            });
+            
+            checkButton.addEventListener('click', () => checkOrderAnswer(dropzone, question.answer, checkButton));
+            
+            container.appendChild(dropzone);
+            container.appendChild(wordBank);
+            container.appendChild(checkButton);
+            quizArea.appendChild(container);
+        }
+        
+        function moveWord(wordBlock, bank, dropzone) {
+            playSound(clickSound, 'C6');
+            
+            // --- FLIP Animation ---
+            // 1. F (First): Get the starting position
+            const startRect = wordBlock.getBoundingClientRect();
+            
+            // 2. L (Last): Move the element in the DOM
+            const targetParent = (wordBlock.parentElement === bank) ? dropzone : bank;
+            targetParent.appendChild(wordBlock);
+            
+            // 3. I (Invert): Get new position and calculate the difference
+            const endRect = wordBlock.getBoundingClientRect();
+            
+            const deltaX = startRect.left - endRect.left;
+            const deltaY = startRect.top - endRect.top;
+            
+            // Apply the inverted transform *without* animation
+            wordBlock.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+            wordBlock.style.transition = 'none';
+            
+            // 4. P (Play): Force a reflow, then animate to (0,0)
+            // This is a browser trick to ensure the transform is applied before the transition
+            requestAnimationFrame(() => {
+                // By triggering this in the next frame, the browser has registered the 'style.transform'
+                // and 'style.transition = none'
+                
+                // Now we add the transition and move it back to its natural position
+                wordBlock.style.transition = 'transform 0.4s ease-out';
+                wordBlock.style.transform = 'translate(0, 0)';
+                
+                // Clean up inline styles after animation is done
+                wordBlock.addEventListener('transitionend', () => {
+                    wordBlock.style.removeProperty('transform');
+                    wordBlock.style.removeProperty('transition');
+                }, { once: true });
+            });
+        }
+        
+        function checkOrderAnswer(dropzone, correctAnswer, checkButton) {
+            const words = Array.from(dropzone.children).map(btn => btn.innerText);
+            const userAnswer = words.join(' ').trim();
+            
+            if (userAnswer === correctAnswer) {
+                score++;
+                updateScore(); // Update score
+                playSound(correctSound, 'C5');
+                dropzone.style.borderColor = 'var(--correct-glow)';
+                dropzone.style.boxShadow = '0 0 10px var(--correct-glow)';
+                nextButton.classList.remove('hidden');
+                // Disable all blocks and the check button on success
+                quizArea.querySelectorAll('.word-block').forEach(b => b.disabled = true);
+                checkButton.disabled = true;
+            } else {
+                playSound(incorrectSound, 'C3');
+                quizContent.classList.add('shake');
+                dropzone.style.borderColor = 'var(--incorrect-glow)';
+                
+                // Disable all blocks and the check button
+                quizArea.querySelectorAll('.word-block').forEach(b => b.disabled = true);
+                checkButton.disabled = true;
+                
+                // Show the Next button to move on
+                nextButton.classList.remove('hidden');
+            }
+        }
+        
+        // --- QUESTION TYPE 3: MATCHING ---
+        
+        let selectedA = null;
+        let selectedB = null;
+        let matchedPairs = 0;
+        let totalPairs = 0;
+
+        function showMatching(question) {
+            matchedPairs = 0;
+            totalPairs = question.columnA.length;
+            
+            const container = document.createElement('div');
+            container.className = 'matching-container';
+            
+            const colA = document.createElement('div');
+            colA.className = 'match-column';
+            colA.id = 'match-col-a';
+            
+            const colB = document.createElement('div');
+            colB.className = 'match-column';
+            colB.id = 'match-col-b';
+            
+            // Shuffle both columns independently
+            shuffleArray(question.columnA).forEach(item => {
+                colA.appendChild(createMatchItem(item, 'a'));
+            });
+            
+            shuffleArray(question.columnB).forEach(item => {
+                colB.appendChild(createMatchItem(item, 'b'));
+            });
+            
+            container.appendChild(colA);
+            container.appendChild(colB);
+            quizArea.appendChild(container);
+        }
+        
+        function createMatchItem(item, column) {
+            const button = document.createElement('button');
+            button.innerText = item.text;
+            button.className = 'match-item';
+            button.dataset.pair = item.pair;
+            button.dataset.column = column;
+            button.addEventListener('click', () => selectMatchItem(button));
+            return button;
+        }
+
+        function selectMatchItem(button) {
+            const column = button.dataset.column;
+            playSound(clickSound, 'C6');
+
+            if (column === 'a') {
+                if (selectedA) selectedA.classList.remove('selected');
+                selectedA = button;
+                selectedA.classList.add('selected');
+            } else {
+                if (selectedB) selectedB.classList.remove('selected');
+                selectedB = button;
+                selectedB.classList.add('selected');
+            }
+
+            // Check for a match if one from each column is selected
+            if (selectedA && selectedB) {
+                checkMatch();
+            }
+        }
+        
+        function checkMatch() {
+            if (selectedA.dataset.pair === selectedB.dataset.pair) {
+                // It's a match!
+                // score++; // <-- REMOVED: Don't add score for each pair
+                // updateScore(); // <-- REMOVED
+                matchedPairs++;
+                playSound(correctSound, 'C5', '8n');
+                
+                selectedA.classList.add('matched');
+                selectedB.classList.add('matched');
+                
+                if (matchedPairs === totalPairs) {
+                    score++; // <-- ADDED: Add 1 point for completing the whole question
+                    updateScore(); // <-- ADDED
+                    nextButton.classList.remove('hidden');
+                }
+            } else {
+                // Not a match
+                playSound(incorrectSound, 'C3');
+                quizContent.classList.add('shake');
+                selectedA.classList.add('incorrect');
+                selectedB.classList.add('incorrect');
+                
+                // Flash incorrect and reset
+                setTimeout(() => {
+                    selectedA.classList.remove('incorrect');
+                    selectedB.classList.remove('incorrect');
+                }, 400);
+            }
+            
+            // Reset selections
+            selectedA.classList.remove('selected');
+            selectedB.classList.remove('selected');
+            selectedA = null;
+            selectedB = null;
+        }
+
+        // --- UTILITY FUNCTIONS ---
+        
+        /**
+         * Fisher-Yates shuffle algorithm
+         */
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // --- EVENT LISTENERS ---
+        nextButton.addEventListener('click', handleNextButton);
+        restartButton.addEventListener('click', restartQuiz);
+
+        // --- START QUIZ ---
+        showQuestion();
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
