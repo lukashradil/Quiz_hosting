@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extreme Interview Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Hide scrollbars for the blob animations */
+        }
+        
+        /* Animated Gradient Blobs */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.4;
+        }
+        
+        #blob1 {
+            width: 400px;
+            height: 400px;
+            top: -150px;
+            left: -150px;
+            background: #8A2BE2; /* BlueViolet */
+            animation: float 20s infinite alternate;
+        }
+        
+        #blob2 {
+            width: 500px;
+            height: 500px;
+            bottom: -200px;
+            right: -200px;
+            background: #00BFFF; /* DeepSkyBlue */
+            animation: float 25s infinite alternate-reverse;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(100px, 100px) rotate(180deg); }
+        }
+
+        /* Glowing text for score */
+        .glow {
+            text-shadow: 0 0 8px rgba(59, 130, 246, 0.6), 0 0 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        /* Word block styling */
+        .word-block {
+            padding: 0.75rem 1.25rem;
+            margin: 0.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.75rem; /* More rounded */
+            cursor: pointer;
+            user-select: none;
+            font-weight: 600;
+            color: white;
+            transition: background-color 0.2s, transform 0.2s;
+            backdrop-filter: blur(5px);
+        }
+        
+        .word-block:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Container for answer blocks to maintain height */
+        #answer-box {
+            min-height: 80px; /* Adjust as needed */
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Modal transitions */
+        .modal {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .modal-hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+        .modal-visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        /* Disable interaction while animating */
+        .pointer-events-none-while-animating {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4 relative">
+
+    <div id="blob1" class="blob"></div>
+    <div id="blob2" class="blob"></div>
+
+    <!-- Main Quiz Container -->
+    <div id="quiz-container" class="w-full max-w-3xl bg-white/10 backdrop-filter backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 md:p-10 text-center">
+        
+        <!-- Header: Title and Score -->
+        <header class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                Extreme Interview Quiz
+            </h1>
+            <div id="score-widget" class="text-right">
+                <span class="text-sm uppercase text-gray-300">Score</span>
+                <div id="score" class="text-3xl font-bold glow text-blue-300">0</div>
+            </div>
+        </header>
+
+        <!-- Question Area -->
+        <div id="question-area" class="mb-6">
+            <p id="question-prompt" class="text-lg text-gray-200 mb-4">Unscramble the words to form a question:</p>
+            
+            <!-- Czech Hint & Speaker Button -->
+            <div class="flex justify-center items-center gap-2 mb-2 h-5">
+                <p id="question-translation" class="text-sm text-gray-400 italic"></p>
+                <button id="speaker-btn" title="Listen to the question" class="text-gray-400 hover:text-white transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM12 8a1 1 0 011-1h.01a1 1 0 110 2H13a1 1 0 01-1-1zm3 0a1 1 0 011-1h.01a1 1 0 110 2H16a1 1 0 01-1-1zm3 0a1 1 0 011-1h.01a1 1 0 110 2H19a1 1 0 01-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Answer Box (Drop Zone) -->
+            <div id="answer-box" class="flex flex-wrap justify-center items-center p-4 rounded-xl mb-6">
+                <!-- Word blocks will be "flown" here -->
+            </div>
+            
+            <!-- Word Bank -->
+            <div id="word-bank" class="flex flex-wrap justify-center items-center p-4 rounded-xl bg-black/10">
+                <!-- Word blocks will be generated here -->
+            </div>
+        </div>
+
+        <!-- Feedback Message -->
+        <div id="message-box" classGas="min-h-[2.5rem] flex items-center justify-center mb-6">
+            <span id="message" class="text-xl font-semibold"></span>
+        </div>
+
+        <!-- Controls -->
+        <div id="controls" class="flex flex-col sm:flex-row justify-center gap-4">
+            <button id="submit-btn" class="py-3 px-8 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold rounded-full shadow-lg transform transition-all hover:scale-105">
+                Check Answer
+            </button>
+            <button id="try-again-btn" class="hidden py-3 px-8 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-full shadow-lg transform transition-all hover:scale-105">
+                Try Again
+            </button>
+            <button id="next-btn" class="hidden py-3 px-8 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold rounded-full shadow-lg transform transition-all hover:scale-105">
+                Next Question
+            </button>
+        </div>
+        
+    </div>
+    
+    <!-- End of Quiz Screen -->
+    <div id="end-screen" class="hidden w-full max-w-3xl bg-white/10 backdrop-filter backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-10 text-center">
+        <h2 class="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">Quiz Complete!</h2>
+        <p class="text-2xl text-gray-200 mb-6">Your final score is:</p>
+        <div id="final-score" class="text-7xl font-bold glow text-green-300 mb-8">0</div>
+        <button id="restart-btn" class="py-3 px-8 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold rounded-full shadow-lg transform transition-all hover:scale-105">
+            Restart Quiz
+        </button>
+    </div>
+
+    <!-- Personal Question Modal -->
+    <div id="modal" class="modal modal-hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+        <div class="modal-content w-full max-w-lg bg-gray-800 border border-purple-500 rounded-2xl shadow-2xl p-8 text-center relative">
+            <h2 class="text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-400">Correct!</h2>
+            <p class="text-lg text-gray-300 mb-2">You formed the sentence:</p>
+            <p id="correct-question" class="text-2xl font-semibold text-white mb-6 p-4 bg-black/20 rounded-lg"></p>
+            <p id="modal-prompt" class="text-lg text-gray-300 mb-6">Now, take a moment to answer it for yourself or with a partner.</p>
+            <button id="modal-close-btn" class="py-2 px-6 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full shadow-lg transform transition-all hover:scale-105">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Direct Questions
+            { words: ["you", "be", "would", "dinosaur", "What", "sort", "of", "?"], correctOrder: "What sort of dinosaur would you be ?", translation: "Jaký dinosaurus bys byl?" },
+            { words: ["are", "you", "weird", "how", "On", "a", "scale", "of", "1-10", "?"], correctOrder: "On a scale of 1-10 how weird are you ?", translation: "Na stupnici od 1 do 10, jak moc jsi divný?" },
+            { words: ["character", "you", "most", "like", "Which", "TV", "are", "?"], correctOrder: "Which TV character are you most like ?", translation: "Které televizní postavě jsi nejvíc podobný?" },
+            { words: ["at", "don't", "weekend", "you", "What", "doing", "the", "like", "?"], correctOrder: "What don't you like doing at the weekend ?", translation: "Co nerad děláš o víkendu?" },
+            { words: ["What", "makes", "you", "unhappy", "?"], correctOrder: "What makes you unhappy ?", translation: "Co tě činí nešťastným?" },
+            { words: ["your", "earliest", "memory", "What's", "?"], correctOrder: "What's your earliest memory ?", translation: "Jaká je tvoje nejranější vzpomínka?" },
+            { words: ["you", "about", "What", "are", "thinking", "?"], correctOrder: "What are you thinking about ?", translation: "O čem přemýšlíš?" },
+            { words: ["friend", "known", "long", "best", "have", "How", "you", "your", "?"], correctOrder: "How long have you known your best friend ?", translation: "Jak dlouho znáš svého nejlepšího kamaráda?" },
+            { words: ["housework", "family", "in", "Who", "your", "the", "does", "?"], correctOrder: "Who in your family does the housework ?", translation: "Kdo u vás v rodině dělá domácí práce?" },
+            
+            // Indirect Questions (9) - Now with pedagogical hints
+            { words: ["tell", "when", "you", "train", "next", "leaves", "the", "Could", "me", "?"], correctOrder: "Could you tell me when the next train leaves ?", translation: "Nápověda (přímá otázka): \"When does the next train leave?\"" },
+            { words: ["you", "time", "film", "know", "finishes", "Do", "what", "the", "?"], correctOrder: "Do you know what time the film finishes ?", translation: "Nápověda (přímá otázka): \"What time does the film finish?\"" },
+            { words: ["I", "can't", "remember", "where", "I", "parked", "my", "car", "."], correctOrder: "I can't remember where I parked my car .", translation: "Nápověda (přímá otázka): \"Where did I park my car?\"" },
+            { words: ["tell", "me", "how", "much", "this", "book", "costs", "Could", "you", "?"], correctOrder: "Could you tell me how much this book costs ?", translation: "Nápověda (přímá otázka): \"How much does this book cost?\"" },
+            { words: ["Do", "you", "know", "if", "Mark", "is", "coming", "to", "the", "meeting", "?"], correctOrder: "Do you know if Mark is coming to the meeting ?", translation: "Nápověda (přímá otázka): \"Is Mark coming to the meeting?\"" },
+            { words: ["I", "wonder", "why", "they", "didn't", "come", "."], correctOrder: "I wonder why they didn't come .", translation: "Nápověda (přímá otázka): \"Why didn't they come?\"" },
+            { words: ["you", "have", "any", "idea", "where", "the", "restaurant", "is", "Do", "?"], correctOrder: "Do you have any idea where the restaurant is ?", translation: "Nápověda (přímá otázka): \"Where is the restaurant?\"" },
+            { words: ["I", "want", "to", "know", "what", "time", "you", "are", "coming", "home", "."], correctOrder: "I want to know what time you are coming home .", translation: "Nápověda (přímá otázka): \"What time are you coming home?\"" },
+            { words: ["tell", "me", "what", "time", "the", "shop", "opens", "Could", "you", "?"], correctOrder: "Could you tell me what time the shop opens ?", translation: "Nápověda (přímá otázka): \"What time does the shop open?\"" }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const quizContainer = document.getElementById('quiz-container');
+        const endScreen = document.getElementById('end-screen');
+        const questionArea = document.getElementById('question-area');
+        const wordBank = document.getElementById('word-bank');
+        const answerBox = document.getElementById('answer-box');
+        const message = document.getElementById('message');
+        
+        const submitBtn = document.getElementById('submit-btn');
+        const tryAgainBtn = document.getElementById('try-again-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        
+        const scoreDisplay = document.getElementById('score');
+        const finalScoreDisplay = document.getElementById('final-score');
+        
+        const modal = document.getElementById('modal');
+        const modalPrompt = document.getElementById('modal-prompt');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const correctQuestion = document.getElementById('correct-question');
+        const translationHint = document.getElementById('question-translation');
+        const speakerBtn = document.getElementById('speaker-btn');
+        
+        // --- Animation Logic (FLIP) ---
+        // We add this class to disable clicks while the animation is running
+        const animationClass = 'pointer-events-none-while-animating';
+
+        function moveWord(wordElement, toContainer) {
+            const container = wordElement.parentElement === wordBank ? answerBox : wordBank;
+            
+            // 1. Get First position
+            const startRect = wordElement.getBoundingClientRect();
+            
+            // Add to new container (it will be invisible for a frame)
+            // If moving to word bank, find original position (or just append)
+            if (container === wordBank) {
+                // Re-insert based on original shuffled order to be predictable
+                const originalIndex = parseInt(wordElement.dataset.originalIndex, 10);
+                const siblings = Array.from(wordBank.children);
+                let inserted = false;
+                for (const sibling of siblings) {
+                    if (parseInt(sibling.dataset.originalIndex, 10) > originalIndex) {
+                        wordBank.insertBefore(wordElement, sibling);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted) {
+                    wordBank.appendChild(wordElement);
+                }
+            } else {
+                 container.appendChild(wordElement);
+            }
+            
+            // 2. Get Last position
+            const endRect = wordElement.getBoundingClientRect();
+            
+            // 3. Invert (calculate difference)
+            const dx = startRect.left - endRect.left;
+            const dy = startRect.top - endRect.top;
+            
+            // 4. Play
+            // Apply inverse transform to make it *look* like it's in the start position
+            wordElement.style.transform = `translate(${dx}px, ${dy}px)`;
+            wordElement.style.transition = 'transform 0s';
+            
+            // Add class to prevent clicks during animation
+            document.body.classList.add(animationClass);
+            
+            // Force browser to apply the transform
+            requestAnimationFrame(() => {
+                // Add transition and set transform to none (0,0)
+                // This makes it "fly" to its new, natural position
+                wordElement.style.transition = 'transform 0.4s ease-out';
+                wordElement.style.transform = 'translate(0, 0)';
+            });
+
+            // Clean up after animation
+            setTimeout(() => {
+                wordElement.style.transition = 'none';
+                document.body.classList.remove(animationClass);
+            }, 400);
+        }
+
+        // --- Quiz Logic ---
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function loadQuestion(index) {
+            if (index >= questions.length) {
+                showEndScreen();
+                return;
+            }
+            
+            currentQuestionIndex = index;
+            const question = questions[index];
+            
+            wordBank.innerHTML = '';
+            answerBox.innerHTML = '';
+            message.textContent = '';
+            translationHint.textContent = question.translation || ''; // Set the translation hint
+            
+            const words = [...question.words];
+            const shuffledWords = shuffleArray(words);
+            
+            // Store original index for re-sorting when moving back to bank
+            const wordElements = shuffledWords.map((word, i) => {
+                const el = document.createElement('div');
+                el.className = 'word-block';
+                el.textContent = word;
+                el.dataset.originalIndex = i; // Store original shuffled position
+                return el;
+            });
+
+            wordElements.forEach(el => {
+                wordBank.appendChild(el);
+            });
+
+            submitBtn.classList.remove('hidden');
+            tryAgainBtn.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+        }
+
+        function checkAnswer() {
+            const userAnswer = Array.from(answerBox.children)
+                .map(el => el.textContent)
+                .join(' ');
+            
+            if (userAnswer === questions[currentQuestionIndex].correctOrder) {
+                score++;
+                scoreDisplay.textContent = score;
+                message.textContent = 'Correct!';
+                message.className = 'text-xl font-semibold text-green-400';
+                
+                submitBtn.classList.add('hidden');
+                tryAgainBtn.classList.add('hidden');
+                nextBtn.classList.remove('hidden');
+                
+                showPersonalQuestionModal();
+            } else {
+                message.textContent = 'Not quite. Try again!';
+                message.className = 'text-xl font-semibold text-red-400';
+                submitBtn.classList.add('hidden');
+                tryAgainBtn.classList.remove('hidden');
+            }
+        }
+
+        function tryAgain() {
+            // Move all words back to the word bank
+            const wordsToMove = Array.from(answerBox.children);
+            wordsToMove.forEach(wordEl => {
+                moveWord(wordEl, wordBank);
+            });
+            
+            message.textContent = '';
+            submitBtn.classList.remove('hidden');
+            tryAgainBtn.classList.add('hidden');
+        }
+
+        function nextQuestion() {
+            loadQuestion(currentQuestionIndex + 1);
+        }
+
+        function showEndScreen() {
+            quizContainer.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalScoreDisplay.textContent = score;
+        }
+
+        function restartQuiz() {
+            score = 0;
+            currentQuestionIndex = 0;
+            scoreDisplay.textContent = score;
+            endScreen.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
+            loadQuestion(0);
+        }
+
+        function speakText(textToSpeak) {
+            if (!window.speechSynthesis) {
+                console.warn("Speech Synthesis not supported");
+                return;
+            }
+            
+            const synth = window.speechSynthesis;
+            if (synth.speaking) {
+                synth.cancel(); // Stop any previous speech
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            
+            // Asynchronously get voices
+            const voices = synth.getVoices();
+            let ukVoice = voices.find(voice => voice.lang === 'en-GB');
+
+            if (ukVoice) {
+                utterance.voice = ukVoice;
+                utterance.lang = 'en-GB';
+            } else {
+                // Fallback to any English voice
+                let englishVoice = voices.find(voice => voice.lang.startsWith('en-'));
+                if (englishVoice) {
+                    utterance.voice = englishVoice;
+                    utterance.lang = englishVoice.lang;
+                } else {
+                    console.warn("No English voice found. Using browser default.");
+                }
+            }
+            
+            utterance.pitch = 1;
+            utterance.rate = 0.9; // A little slower for clarity
+            
+            utterance.onerror = (event) => {
+                console.error('SpeechSynthesisUtterance.onerror', event);
+            };
+            
+            synth.speak(utterance);
+        }
+        
+        function showPersonalQuestionModal() {
+            const questionText = questions[currentQuestionIndex].correctOrder;
+            correctQuestion.textContent = questionText;
+            
+            // Change modal prompt for statements (indirect questions)
+            if (questionText.endsWith('.')) {
+                modalPrompt.textContent = "Great! This is an indirect statement.";
+                modal.querySelector('h2').textContent = 'Correct!';
+            } else {
+                modalPrompt.textContent = "Now, take a moment to answer it for yourself or with a partner.";
+                modal.querySelector('h2').textContent = 'Correct!';
+            }
+            
+            modal.classList.remove('modal-hidden');
+            modal.classList.add('modal-visible');
+        }
+
+        function hidePersonalQuestionModal() {
+            modal.classList.add('modal-hidden');
+            modal.classList.remove('modal-visible');
+        }
+
+        // --- Event Listeners ---
+
+        wordBank.addEventListener('click', (e) => {
+            if (e.target.classList.contains('word-block')) {
+                moveWord(e.target, answerBox);
+            }
+        });
+
+        answerBox.addEventListener('click', (e) => {
+            if (e.target.classList.contains('word-block')) {
+                moveWord(e.target, wordBank);
+            }
+        });
+
+        submitBtn.addEventListener('click', checkAnswer);
+        tryAgainBtn.addEventListener('click', tryAgain);
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', restartQuiz);
+        modalCloseBtn.addEventListener('click', hidePersonalQuestionModal);
+
+        speakerBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < questions.length) {
+                const textToSpeak = questions[currentQuestionIndex].correctOrder;
+                speakText(textToSpeak);
+            }
+        });
+
+        // Start the quiz
+        loadQuestion(0);
+
+        // Ensure voices are loaded for the first time
+        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+        }
+        speechSynthesis.getVoices(); // Initial trigger
+    </script>
+</body>
+</html>
+
