@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCE Grammar Quiz: Passive & Reported Speech</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Custom styles for the app */
+        .quiz-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Animation for feedback */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Custom radio/option button styles */
+        .option-btn {
+            @apply w-full text-left p-4 border border-gray-300 rounded-lg shadow-sm transition-all duration-200;
+        }
+        .option-btn:hover {
+            @apply bg-indigo-50 border-indigo-400;
+        }
+        .option-btn.selected {
+            @apply bg-indigo-100 border-indigo-600 ring-2 ring-indigo-500;
+        }
+
+        /* Feedback states */
+        .option-btn.correct {
+            @apply bg-green-100 border-green-500 text-green-800 font-medium;
+        }
+        .option-btn.incorrect {
+            @apply bg-red-100 border-red-500 text-red-800;
+        }
+        .input-correct {
+            @apply border-green-500 ring-2 ring-green-400;
+        }
+        .input-incorrect {
+            @apply border-red-500 ring-2 ring-red-400;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-500 to-purple-600 min-h-screen flex items-center justify-center p-4">
+
+    <!-- Main App Container -->
+    <div id="app" class="w-full max-w-2xl mx-auto">
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="quiz-card rounded-2xl shadow-2xl p-6 md:p-10 text-center">
+            <svg class="w-16 h-16 mx-auto text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18m-18 0a9 9 0 1118 0 9 9 0 01-18 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494M18.364 5.636l-3.536 3.536m-9.192 9.192l3.536-3.536m0-9.192l-3.536 3.536m9.192 9.192L12 17.747"></path></svg>
+            <h1 class="text-3xl font-bold text-gray-800 mt-4">FCE Grammar Challenge</h1>
+            <p class="text-lg text-gray-600 mt-2">Passive Voice & Reported Speech</p>
+            <p class="text-gray-700 mt-6">
+                Welcome! This is an advanced quiz designed to match the FCE 'Use of English' format.
+                You'll face <strong>15 random questions</strong> from a bank of 40, covering:
+            </p>
+            <ul class="text-left list-disc list-inside mt-4 text-gray-600 space-y-1">
+                <li>Key Word Transformations</li>
+                <li>Multiple Choice Questions</li>
+                <li>Gap-Fill Exercises</li>
+            </ul>
+            <p class="text-sm font-medium text-gray-500 mt-6">Pay close attention to tenses and verb forms. Good luck!</p>
+            <button id="start-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105 mt-8 text-lg">
+                Start Quiz
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <!-- Progress Bar -->
+            <div class="h-2.5 w-full bg-gray-200 rounded-full mb-4">
+                <div id="progress-bar" class="h-2.5 bg-indigo-600 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            
+            <div class="quiz-card rounded-2xl shadow-2xl p-6 md:p-8">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-4">
+                    <span id="question-category" class="text-sm font-semibold text-indigo-600 uppercase"></span>
+                    <span id="question-counter" class="text-sm font-medium text-gray-500"></span>
+                </div>
+
+                <!-- Question Area -->
+                <div id="question-container" class="mb-6">
+                    <!-- Content will be injected by JS -->
+                </div>
+
+                <!-- Answer Area -->
+                <div id="answer-container" class="mb-6">
+                    <!-- Content will be injected by JS -->
+                </div>
+
+                <!-- Feedback Area -->
+                <div id="feedback-container" class="hidden fade-in p-4 rounded-lg">
+                    <div class="flex items-start">
+                        <div id="feedback-icon" class="flex-shrink-0">
+                            <!-- SVG Check or X -->
+                        </div>
+                        <div class="ml-3">
+                            <h3 id="feedback-title" class="text-lg font-bold"></h3>
+                            <p id="feedback-explanation" class="text-sm mt-1"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-8">
+                    <button id="submit-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105 text-lg">
+                        Check Answer
+                    </button>
+                    <button id="next-btn" class="hidden w-full bg-gray-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-gray-800 transition-all duration-300 text-lg">
+                        Next Question
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="hidden quiz-card rounded-2xl shadow-2xl p-6 md:p-10 text-center">
+            <h1 class="text-3xl font-bold text-gray-800">Quiz Complete!</h1>
+            <div id="score-graphic" class="w-32 h-32 rounded-full flex items-center justify-center mx-auto my-6 text-3xl font-bold">
+                <!-- Graphic and score injected by JS -->
+            </div>
+            <p id="score-message" class="text-lg text-gray-700 mb-8"></p>
+            <button id="restart-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105 text-lg">
+                Try Another Round
+            </button>
+        </div>
+    </div>
+
+    <!-- SVG Icons for Feedback -->
+    <div id="svg-definitions" class="hidden">
+        <svg id="icon-correct" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <svg id="icon-incorrect" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+    </div>
+
+    <script>
+        // --- QUESTION BANK ---
+        // A comprehensive bank of 40 FCE-style questions
+        const allQuestions = [
+            // Section 1: Reported Speech (Transformations)
+            {
+                section: "Reported Speech (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "'I will call you tomorrow,' said Mark.",
+                keyword: "PROMISED",
+                questionText: "Mark {blank} me the next day.",
+                answer: "promised to call",
+                explanation: "The reporting verb 'promise' is followed by the infinitive 'to + verb' ('to call'). 'Tomorrow' changes to 'the next day'."
+            },
+            {
+                section: "Reported Speech (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "'Where did you buy this jacket?' she asked me.",
+                keyword: "WHERE",
+                questionText: "She asked me {blank} that jacket.",
+                answer: "where I had bought",
+                explanation: "In reported questions, the tense 'backshifts'. Simple Past ('did buy') becomes Past Perfect ('had bought'), and the word order is (Question Word + Subject + Verb)."
+            },
+            {
+                section: "Reported Speech (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "'I'm sorry I was late,' he said.",
+                keyword: "APOLOGISED",
+                questionText: "He {blank} late.",
+                answer: "apologised for being",
+                explanation: "The reporting verb 'apologise' is followed by the preposition 'for' + gerund ('-ing' form)."
+            },
+            {
+                section: "Reported Speech (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "'Don't forget to lock the door,' my dad said.",
+                keyword: "REMINDED",
+                questionText: "My dad {blank} lock the door.",
+                answer: "reminded me to",
+                explanation: "The reporting structure is 'remind + someone + to + infinitive'."
+            },
+            {
+                section: "Reported Speech (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "'You should get more sleep,' the doctor told him.",
+                keyword: "ADVISED",
+                questionText: "The doctor {blank} get more sleep.",
+                answer: "advised him to",
+                explanation: "The reporting structure is 'advise + someone + to + infinitive'."
+            },
+            {
+                section: "Reported Speech (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "'I didn't break the vase,' the boy said.",
+                keyword: "DENIED",
+                questionText: "The boy {blank} the vase.",
+                answer: ["denied breaking", "denied having broken"],
+                explanation: "The reporting verb 'deny' is followed by a gerund ('-ing' form). Both simple and perfect gerunds are correct here."
+            },
+            {
+                section: "Reported Speech (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "'Let's go for a coffee,' she said.",
+                keyword: "SUGGESTED",
+                questionText: "She {blank} for a coffee.",
+                answer: "suggested going",
+                explanation: "The reporting verb 'suggest' is followed by a gerund ('-ing' form) when the speaker is part of the suggestion."
+            },
+            {
+                section: "Reported Speech (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "'Will you be at the party?' he asked.",
+                keyword: "IF",
+                questionText: "He asked me {blank} be at the party.",
+                answer: "if I would",
+                explanation: "'Will' changes to 'would' in reported speech, and 'if' is used to introduce the reported yes/no question."
+            },
+            {
+                section: "Reported Speech (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "'I've never seen such a beautiful sunset,' she said.",
+                keyword: "HAD",
+                questionText: "She said she {blank} such a beautiful sunset.",
+                answer: "had never seen",
+                explanation: "The Present Perfect ('I've never seen') backshifts to the Past Perfect ('had never seen') in reported speech."
+            },
+            {
+                section: "Reported Speech (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "'Stop talking!' the teacher shouted.",
+                keyword: "ORDERED",
+                questionText: "The teacher {blank} talking.",
+                answer: "ordered us to stop",
+                explanation: "For commands, we use the structure 'order + someone + to + infinitive'."
+            },
+
+            // Section 2: Passive Voice (Transformations)
+            {
+                section: "Passive Voice (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "They are building a new hospital in the city centre.",
+                keyword: "BEING",
+                questionText: "A new hospital {blank} in the city centre.",
+                answer: "is being built",
+                explanation: "This is the Present Continuous Passive (is/are + being + past participle) used for actions in progress."
+            },
+            {
+                section: "Passive Voice (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "Someone has stolen my wallet!",
+                keyword: "BEEN",
+                questionText: "My wallet {blank} stolen!",
+                answer: "has been",
+                explanation: "This is the Present Perfect Passive (has/have + been + past participle) used for a past action with a present result."
+            },
+            {
+                section: "Passive Voice (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "They will not announce the winner until 10 PM.",
+                keyword: "BE",
+                questionText: "The winner {blank} until 10 PM.",
+                answer: "will not be announced",
+                explanation: "This is the Future Simple Passive (will + be + past participle)."
+            },
+            {
+                section: "Passive Voice (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "You must complete this form and return it.",
+                keyword: "BE",
+                questionText: "This form {blank} and returned.",
+                answer: "must be completed",
+                explanation: "This is the Modal Passive (modal + be + past participle). The 'be' applies to both 'completed' and 'returned'."
+            },
+            {
+                section: "Passive Voice (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "People say that he is the best FCE coach.",
+                keyword: "SAID",
+                questionText: "He {blank} the best FCE coach.",
+                answer: "is said to be",
+                explanation: "This is an impersonal passive structure: 'He is said...' + 'to + infinitive'."
+            },
+            {
+                section: "Passive Voice (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "They had finished all the preparations by the time we arrived.",
+                keyword: "BEEN",
+                questionText: "All the preparations {blank} by the time we arrived.",
+                answer: "had been finished",
+                explanation: "This is the Past Perfect Passive (had + been + past participle) to show an action was completed before another past action."
+            },
+            {
+                section: "Passive Voice (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "Nobody told me about the meeting.",
+                keyword: "NOT",
+                questionText: "I {blank} about the meeting.",
+                answer: "was not told",
+                explanation: "The active 'Nobody told me' (Simple Past) becomes the passive 'I was not told'."
+            },
+            {
+                section: "Passive Voice (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "They are going to launch the new product next month.",
+                keyword: "TO",
+                questionText: "The new product is {blank} next month.",
+                answer: "going to be launched",
+                explanation: "This is the passive form of 'be going to' (is/are + going to + be + past participle)."
+            },
+            {
+                section: "Passive Voice (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "They gave us a full refund.",
+                keyword: "GIVEN",
+                questionText: "We {blank} a full refund.",
+                answer: "were given",
+                explanation: "This is a Simple Past Passive where the indirect object ('us') becomes the subject ('We')."
+            },
+            {
+                section: "Passive Voice (Transformation)",
+                type: "TRANSFORMATION",
+                prompt: "People think the company is planning a merger.",
+                keyword: "THOUGHT",
+                questionText: "The company {blank} planning a merger.",
+                answer: "is thought to be",
+                explanation: "This is another impersonal passive structure: 'The company is thought...' + 'to + infinitive'."
+            },
+            
+            // Section 3: Reported Speech (MCQ & Gap-Fill)
+            {
+                section: "Reported Speech (MCQ)",
+                type: "MCQ",
+                questionText: "He asked me ______ I was busy that evening.",
+                options: ["that", "if", "what"],
+                answer: "if",
+                explanation: "'If' or 'whether' is used to introduce a reported yes/no question ('Are you busy...?')."
+            },
+            {
+                section: "Reported Speech (Gap-Fill)",
+                type: "GAP_FILL",
+                questionText: "She told me she ______ (never) to Italy.",
+                answer: "had never been",
+                explanation: "The direct speech 'I have never been' (Present Perfect) backshifts to 'had never been' (Past Perfect)."
+            },
+            {
+                section: "Reported Speech (MCQ)",
+                type: "MCQ",
+                questionText: "The boss warned his employees ______ late for the meeting.",
+                options: ["not to be", "to not be", "don't be"],
+                answer: "not to be",
+                explanation: "The structure for a negative command or warning is 'warn + someone + not + to + infinitive'."
+            },
+            {
+                section: "Reported Speech (Gap-Fill)",
+                type: "GAP_FILL",
+                questionText: "I asked her what she ______ (do) the following day.",
+                answer: ["was doing", "would be doing"],
+                explanation: "Direct speech 'What are you doing tomorrow?' (Present Continuous for future) changes to 'was doing' (Past Continuous). 'What will you do?' changes to 'would be doing'."
+            },
+            {
+                section: "Reported Speech (MCQ)",
+                type: "MCQ",
+                questionText: "He denied ______ the last biscuit.",
+                options: ["to eat", "eating", "that he ate"],
+                answer: "eating",
+                explanation: "The verb 'deny' is followed by a gerund ('-ing' form)."
+            },
+            {
+                section: "Reported Speech (Gap-Fill)",
+                type: "GAP_FILL",
+                questionText: "She said she ______ (must) leave early, so I asked her why.",
+                answer: "had to",
+                explanation: "When 'must' expresses obligation, it changes to 'had to' in reported speech."
+            },
+            {
+                section: "Reported Speech (MCQ)",
+                type: "MCQ",
+                questionText: "My friend asked ______ help him with his CV.",
+                options: ["if I can", "me to", "whether I could"],
+                answer: "whether I could",
+                explanation: "The direct question 'Can you help...?' becomes 'if/whether I could...'. 'me to' would follow a verb like 'asked me to help', but 'asked' alone needs 'if/whether'."
+            },
+            {
+                section: "Reported Speech (Gap-Fill)",
+                type: "GAP_FILL",
+                questionText: "The airline ______ (announce) that all flights would be delayed.",
+                answer: "announced",
+                explanation: "This is a simple reporting statement in the past. The reporting verb 'announced' is in the Simple Past."
+            },
+            {
+                section: "Reported Speech (MCQ)",
+                type: "MCQ",
+                questionText: "He complained ______ the music was too loud.",
+                options: ["that", "about", "to"],
+                answer: "that",
+                explanation: "'Complain + that + clause' is used to report the content of the complaint. ('Complain about + noun')."
+            },
+            {
+                section: "Reported Speech (Gap-Fill)",
+                type: "GAP_FILL",
+                questionText: "I wondered ______ (be) able to find the correct address.",
+                answer: ["whether he would be", "if he would be"],
+                explanation: "We use 'wondered if/whether' to report a question we ask ourselves. 'Will he be able...?' becomes '...if he would be'."
+            },
+            
+            // Section 4: Passive Voice (MCQ & Gap-Fill)
+            {
+                section: "Passive Voice (Gap-Fill)",
+                type: "GAP_FILL",
+                questionText: "Look! The stadium ______ (paint) right now.",
+                answer: "is being painted",
+                explanation: "Use the Present Continuous Passive ('is being painted') for an action happening at the moment of speaking (indicated by 'Look!' and 'right now')."
+            },
+            {
+                section: "Passive Voice (MCQ)",
+                type: "MCQ",
+                questionText: "This problem ______ by this time tomorrow.",
+                options: ["will be solved", "has been solved", "will solve"],
+                answer: "will be solved",
+                explanation: "Use the Future Simple Passive ('will be solved') for a future action. 'By this time tomorrow' is a key future marker."
+            },
+            {
+                section: "Passive Voice (Gap-Fill)",
+                type: "GAP_FILL",
+                questionText: "The new regulations ______ (should / introduce) months ago.",
+                answer: "should have been introduced",
+                explanation: "Use the Modal Perfect Passive ('should have been + past participle') to talk about a past action that was advisable but didn't happen."
+            },
+            {
+                section: "Passive Voice (MCQ)",
+                type: "MCQ",
+                questionText: "While the film ______, my phone rang.",
+                options: ["was showing", "was being shown", "has been shown"],
+                answer: "was being shown",
+                explanation: "Use the Past Continuous Passive ('was being shown') for a background action in progress (the film was being shown) when another action (my phone rang) interrupted it."
+            },
+            {
+                section: "Passive Voice (Gap-Fill)",
+                type: "GAP_FILL",
+                questionText: "All applications must ______ (receive) by Friday.",
+                answer: "be received",
+                explanation: "Use the Modal Passive ('must + be + past participle') to express necessity."
+            },
+            {
+                section: "Passive Voice (MCQ)",
+                type: "MCQ",
+                questionText: "It ______ that the strike will end soon.",
+                options: ["is hoping", "is hoped", "has hoped"],
+                answer: "is hoped",
+                explanation: "This is an impersonal passive structure ('It is hoped...'). 'Hope' is a state verb, so 'is hoping' is incorrect."
+            },
+            {
+                section: "Passive Voice (Gap-Fill)",
+                type: "GAP_FILL",
+                questionText: "The actor ______ (give) an award by the director.",
+                answer: "was given",
+                explanation: "Use the Simple Past Passive ('was given') to describe a completed action in the past where the actor is the receiver of the action."
+            },
+            {
+                section: "Passive Voice (Gap-Fill)",
+                type: "GAP_FILL",
+                questionText: "The project had to ______ (postpone) due to a lack of funding.",
+                answer: "be postponed",
+                explanation: "Use the modal passive structure 'had to + be + past participle' to express past necessity."
+            },
+            {
+                section: "Passive Voice (MCQ)",
+                type: "MCQ",
+                questionText: "English ______ in many countries around the world.",
+                options: ["is spoken", "speaks", "is being spoken"],
+                answer: "is spoken",
+                explanation: "Use the Present Simple Passive ('is spoken') for general truths or facts."
+            },
+            {
+                section: "Passive Voice (Gap-Fill)",
+                type: "GAP_FILL",
+                questionText: "These computers ______ (not use) for years.",
+                answer: "have not been used",
+                explanation: "Use the Present Perfect Passive ('have not been used') to describe an action (or lack of action) over a period of time ('for years') up to the present."
+            }
+        ];
+
+        // --- DOM Elements ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        
+        const startBtn = document.getElementById('start-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        
+        const progressBar = document.getElementById('progress-bar');
+        const questionCategory = document.getElementById('question-category');
+        const questionCounter = document.getElementById('question-counter');
+        const questionContainer = document.getElementById('question-container');
+        const answerContainer = document.getElementById('answer-container');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackIcon = document.getElementById('feedback-icon');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const feedbackExplanation = document.getElementById('feedback-explanation');
+        
+        const scoreGraphic = document.getElementById('score-graphic');
+        const scoreMessage = document.getElementById('score-message');
+
+        const svgIconCorrect = document.getElementById('icon-correct').cloneNode(true);
+        const svgIconIncorrect = document.getElementById('icon-incorrect').cloneNode(true);
+
+        // --- State Variables ---
+        let quizQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedAnswer = null;
+        const QUIZ_LENGTH = 15;
+
+        // --- Functions ---
+
+        /**
+         * Shuffles an array in place
+         */
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        /**
+         * Starts the quiz
+         */
+        function startGame() {
+            // Reset state
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            // Create a randomized quiz set
+            shuffleArray(allQuestions);
+            quizQuestions = allQuestions.slice(0, QUIZ_LENGTH);
+            
+            // Show quiz screen
+            startScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            
+            displayQuestion();
+        }
+
+        /**
+         * Displays the current question
+         */
+        function displayQuestion() {
+            // Reset UI
+            selectedAnswer = null;
+            feedbackContainer.classList.add('hidden');
+            submitBtn.classList.remove('hidden');
+            nextBtn.classList.add('hidden');
+            
+            // Get current question
+            const q = quizQuestions[currentQuestionIndex];
+            
+            // Update progress
+            questionCategory.textContent = q.section;
+            questionCounter.textContent = `Question ${currentQuestionIndex + 1} of ${QUIZ_LENGTH}`;
+            progressBar.style.width = `${((currentQuestionIndex + 1) / QUIZ_LENGTH) * 100}%`;
+            
+            // Clear previous question
+            questionContainer.innerHTML = '';
+            answerContainer.innerHTML = '';
+
+            // Render based on question type
+            if (q.type === 'TRANSFORMATION') {
+                questionContainer.innerHTML = `
+                    <p class="text-gray-600 text-lg mb-3">"${q.prompt}"</p>
+                    <p class="text-gray-800 text-lg mb-2 font-medium">
+                        Complete the second sentence using the word <strong>${q.keyword}</strong>.
+                    </p>
+                    <div class="text-lg text-gray-800 bg-gray-100 p-4 rounded-lg">
+                        ${q.questionText.replace('{blank}', '<span class="font-bold text-gray-500">[...]</span>')}
+                    </div>
+                `;
+                answerContainer.innerHTML = `
+                    <label for="transformation-answer" class="block text-sm font-medium text-gray-700 mb-2">Your answer (2-5 words):</label>
+                    <input type="text" id="transformation-answer" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                `;
+            } else if (q.type === 'GAP_FILL') {
+                questionContainer.innerHTML = `
+                    <p class="text-gray-800 text-lg mb-2 font-medium">
+                        Complete the sentence with the correct form of the verb(s) in brackets.
+                    </p>
+                    <div class="text-lg text-gray-800 bg-gray-100 p-4 rounded-lg">
+                        ${q.questionText.replace(/\((.*?)\)/, '<span class="font-bold text-indigo-700">($1)</span>').replace(/______/, '<span class="font-bold text-gray-500">[...]</span>')}
+                    </div>
+                `;
+                answerContainer.innerHTML = `
+                    <label for="gapfill-answer" class="block text-sm font-medium text-gray-700 mb-2">Your answer:</label>
+                    <input type="text" id="gapfill-answer" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                `;
+            } else if (q.type === 'MCQ') {
+                questionContainer.innerHTML = `
+                    <p class="text-gray-800 text-lg mb-2 font-medium">
+                        Choose the best option to complete the sentence.
+                    </p>
+                    <div class="text-lg text-gray-800 bg-gray-100 p-4 rounded-lg">
+                        ${q.questionText.replace('______', '<span class="font-bold text-gray-500">[...]</span>')}
+                    </div>
+                `;
+                const optionsHTML = q.options.map(option => `
+                    <button class="option-btn" data-value="${option}">
+                        ${option}
+                    </button>
+                `).join('');
+                answerContainer.innerHTML = `<div class="space-y-3">${optionsHTML}</div>`;
+                
+                // Add event listeners for MCQ buttons
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        // Remove selected from all
+                        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                        // Add selected to clicked
+                        btn.classList.add('selected');
+                        selectedAnswer = btn.dataset.value;
+                    });
+                });
+            }
+        }
+
+        /**
+         * Checks the user's answer
+         */
+        function checkAnswer() {
+            const q = quizQuestions[currentQuestionIndex];
+            let userAnswer;
+            let isCorrect = false;
+
+            if (q.type === 'MCQ') {
+                userAnswer = selectedAnswer;
+            } else if (q.type === 'TRANSFORMATION') {
+                userAnswer = document.getElementById('transformation-answer').value;
+            } else if (q.type === 'GAP_FILL') {
+                userAnswer = document.getElementById('gapfill-answer').value;
+            }
+
+            // Normalize answers for comparison
+            const normalizedUserAnswer = userAnswer ? userAnswer.trim().toLowerCase().replace(/[.,!]/g, '') : "";
+            
+            if (Array.isArray(q.answer)) {
+                isCorrect = q.answer.some(ans => ans.toLowerCase() === normalizedUserAnswer);
+            } else {
+                isCorrect = q.answer.toLowerCase() === normalizedUserAnswer;
+            }
+
+            // Show feedback
+            feedbackContainer.classList.remove('hidden', 'bg-green-50', 'bg-red-50');
+            feedbackIcon.innerHTML = '';
+            
+            const correctAnswerText = Array.isArray(q.answer) ? q.answer.join(' / ') : q.answer;
+
+            if (isCorrect) {
+                score++;
+                feedbackContainer.classList.add('bg-green-50');
+                feedbackIcon.appendChild(svgIconCorrect);
+                feedbackTitle.className = "text-lg font-bold text-green-800";
+                feedbackTitle.textContent = "Correct!";
+                feedbackExplanation.className = "text-sm mt-1 text-green-700";
+                feedbackExplanation.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
+            } else {
+                feedbackContainer.classList.add('bg-red-50');
+                feedbackIcon.appendChild(svgIconIncorrect);
+                feedbackTitle.className = "text-lg font-bold text-red-800";
+                feedbackTitle.textContent = "Incorrect";
+                feedbackExplanation.className = "text-sm mt-1 text-red-700";
+                feedbackExplanation.innerHTML = `<strong>Correct answer:</strong> ${correctAnswerText}<br><strong>Explanation:</strong> ${q.explanation}`;
+            }
+
+            // Style inputs/options based on correctness
+            if (q.type === 'MCQ') {
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.disabled = true;
+                    if (btn.dataset.value === q.answer) {
+                        btn.classList.add('correct');
+                    } else if (btn.dataset.value === selectedAnswer) {
+                        btn.classList.add('incorrect');
+                    }
+                });
+            } else {
+                const inputEl = document.getElementById('transformation-answer') || document.getElementById('gapfill-answer');
+                inputEl.disabled = true;
+                inputEl.classList.add(isCorrect ? 'input-correct' : 'input-incorrect');
+            }
+
+            // Toggle buttons
+            submitBtn.classList.add('hidden');
+            nextBtn.classList.remove('hidden');
+        }
+
+        /**
+         * Moves to the next question or shows results
+         */
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < QUIZ_LENGTH) {
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        /**
+         * Displays the final results screen
+         */
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+
+            const percentage = Math.round((score / QUIZ_LENGTH) * 100);
+            let message = "";
+            let graphicColor = "";
+            
+            if (percentage >= 80) {
+                message = "Excellent work! You have a strong command of these FCE grammar points.";
+                graphicColor = "bg-green-500";
+            } else if (percentage >= 60) {
+                message = "Good job! You're on the right track. Review the explanations and try again.";
+                graphicColor = "bg-yellow-500";
+            } else {
+                message = "Keep practicing! These are tricky topics. Review your answers and focus on the explanations.";
+                graphicColor = "bg-red-500";
+            }
+
+            scoreGraphic.className = `w-32 h-32 rounded-full flex items-center justify-center mx-auto my-6 text-3xl font-bold text-white ${graphicColor} shadow-lg`;
+            scoreGraphic.innerHTML = `${percentage}%`;
+            scoreMessage.textContent = `You scored ${score} out of ${QUIZ_LENGTH}. ${message}`;
+        }
+
+        // --- Event Listeners ---
+        startBtn.addEventListener('click', startGame);
+        submitBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', startGame);
+
+    </script>
+</body>
+</html>
