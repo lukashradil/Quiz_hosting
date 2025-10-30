@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irregular Verb Quiz - Future Perfect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a1a;
+            color: #e0e0ff;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 1px 1px, rgba(200, 200, 255, 0.1) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+        .orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 2rem;
+        }
+        .card {
+            background: rgba(10, 10, 30, 0.8);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.5s ease;
+        }
+        .card.correct-answer {
+            background: rgba(200, 255, 255, 0.8);
+            border-color: #ffffff;
+            box-shadow: 0 0 50px #00ffff, inset 0 0 30px rgba(255, 255, 255, 0.7);
+        }
+        .card.wrong-answer {
+            background: rgba(60, 0, 10, 0.9);
+            border-color: #ff0000;
+            box-shadow: 0 0 50px #ff0000, inset 0 0 30px rgba(255, 0, 0, 0.6);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.5);
+            transition: all 0.3s ease;
+            transform: scale(1);
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.8), 0 0 30px rgba(255, 0, 255, 0.8);
+        }
+        .option-btn {
+            background-color: rgba(0, 100, 150, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover {
+            background-color: rgba(0, 150, 200, 0.5);
+            border-color: rgba(0, 255, 255, 0.8);
+        }
+        .option-btn.correct {
+            background-color: rgba(0, 255, 128, 0.4);
+            border-color: #00ff80;
+            box-shadow: 0 0 15px rgba(0, 255, 128, 0.7);
+        }
+        .option-btn.incorrect {
+            background-color: rgba(255, 0, 100, 0.4);
+            border-color: #ff0064;
+            box-shadow: 0 0 15px rgba(255, 0, 100, 0.7);
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+        .progress-bar-container {
+            background-color: rgba(0, 50, 70, 0.5);
+            border-radius: 9999px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+            height: 10px;
+            width: 0%;
+            border-radius: 9999px;
+            transition: width 0.5s ease-in-out;
+        }
+        .speaker-btn {
+            background: transparent;
+            border: none;
+            color: #00ffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .speaker-btn:hover {
+            color: #ff00ff;
+            transform: scale(1.1);
+        }
+        .grade-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            box-shadow: 0 0 20px;
+        }
+        .grade-a { border: 4px solid #0f0; color: #0f0; box-shadow-color: #0f0;}
+        .grade-b { border: 4px solid #adff2f; color: #adff2f; box-shadow-color: #adff2f;}
+        .grade-c { border: 4px solid #ff0; color: #ff0; box-shadow-color: #ff0;}
+        .grade-d { border: 4px solid #ffa500; color: #ffa500; box-shadow-color: #ffa500;}
+        .grade-f { border: 4px solid #f00; color: #f00; box-shadow-color: #f00;}
+
+        /* --- Animation Styles --- */
+        #animation-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+        .particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fade-out 1.5s ease-out forwards;
+        }
+        .sparkle {
+            background-color: #fff;
+            box-shadow: 0 0 10px #fff, 0 0 15px #00ffff, 0 0 20px #00ffff;
+        }
+        .ember {
+            background-color: #ff4500;
+            box-shadow: 0 0 8px #ff4500, 0 0 12px #ff0000;
+        }
+        @keyframes fade-out {
+            from {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: var(--transform-end);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+
+    <div id="animation-container"></div>
+    <div id="container" class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="card text-center p-8">
+            <h1 class="orbitron text-4xl font-bold mb-2 text-cyan-300">Future Perfect</h1>
+            <p class="mb-8 text-lg text-fuchsia-300">Irregular Verb Challenge</p>
+            <p class="mb-8">Test your knowledge of past simple and past participle forms. A new set of 20 verbs is randomized for each session.</p>
+            <button id="start-btn" class="btn-primary">Initiate Test</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <div class="text-lg">Score: <span id="score" class="font-bold text-cyan-300">0</span></div>
+                <div class="text-lg">Hints: <span id="hints-used" class="font-bold text-fuchsia-300">0</span></div>
+            </div>
+            <div class="progress-bar-container mb-6">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+
+            <div id="quiz-card" class="card p-8">
+                <p id="question-count" class="text-right text-sm text-gray-400 mb-2">1 / 20</p>
+                <p class="text-lg mb-2 text-fuchsia-300">What is the <span id="form-type" class="font-bold"></span> of:</p>
+                <div class="flex items-center justify-center text-center mb-6">
+                    <h2 id="verb" class="orbitron text-4xl md:text-5xl font-bold mr-4"></h2>
+                    <button id="speaker-btn" class="speaker-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-volume-up-fill" viewBox="0 0 16 16">
+                            <path d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z"/>
+                            <path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89z"/>
+                            <path d="M8.707 11.182A4.5 4.5 0 0 0 10.025 8a4.5 4.5 0 0 0-1.318-3.182L8 5.525A3.5 3.5 0 0 1 9.025 8 3.5 3.5 0 0 1 8 10.475zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/>
+                        </svg>
+                    </button>
+                </div>
+                 <p id="phonetics" class="text-center text-cyan-300 text-md mb-2"></p>
+                 <p id="translation" class="text-center text-gray-400 text-md mb-8"></p>
+
+                <div id="options" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Options will be injected here -->
+                </div>
+
+                <div id="feedback" class="mt-6 text-center text-lg font-semibold hidden"></div>
+                <button id="next-btn" class="btn-primary w-full mt-6 hidden">Next Question</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="hidden card p-8 text-center">
+            <h2 class="orbitron text-3xl font-bold mb-4">Test Complete</h2>
+            <div class="my-8 flex justify-center">
+                <div id="grade-display" class="grade-circle">
+                    <span id="grade"></span>
+                </div>
+            </div>
+            <p class="text-xl">Final Score: <strong id="final-score" class="text-cyan-300"></strong></p>
+            <p class="text-md mb-2">Correct Answers: <strong id="correct-answers" class="text-fuchsia-300"></strong> / 20</p>
+            <p class="text-md mb-8">Hints Used: <strong id="total-hints" class="text-gray-400"></strong></p>
+            <button id="restart-btn" class="btn-primary">Try a New Set</button>
+        </div>
+
+    </div>
+
+    <script>
+        const verbDatabase = [
+            { present: "be", pastSimple: "was/were", pastParticiple: "been", phonetics: "/biː/", translation: "být" },
+            { present: "become", pastSimple: "became", pastParticiple: "become", phonetics: "/bɪˈkʌm/", translation: "stát se" },
+            { present: "begin", pastSimple: "began", pastParticiple: "begun", phonetics: "/bɪˈɡɪn/", translation: "začít" },
+            { present: "break", pastSimple: "broke", pastParticiple: "broken", phonetics: "/breɪk/", translation: "zlomit" },
+            { present: "bring", pastSimple: "brought", pastParticiple: "brought", phonetics: "/brɪŋ/", translation: "přinést" },
+            { present: "build", pastSimple: "built", pastParticiple: "built", phonetics: "/bɪld/", translation: "stavět" },
+            { present: "buy", pastSimple: "bought", pastParticiple: "bought", phonetics: "/baɪ/", translation: "koupit" },
+            { present: "can", pastSimple: "could", pastParticiple: "(been able)", phonetics: "/kæn/", translation: "moci" },
+            { present: "catch", pastSimple: "caught", pastParticiple: "caught", phonetics: "/kætʃ/", translation: "chytit" },
+            { present: "come", pastSimple: "came", pastParticiple: "come", phonetics: "/kʌm/", translation: "přijít" },
+            { present: "cost", pastSimple: "cost", pastParticiple: "cost", phonetics: "/kɒst/", translation: "stát (cena)" },
+            { present: "do", pastSimple: "did", pastParticiple: "done", phonetics: "/duː/", translation: "dělat" },
+            { present: "drink", pastSimple: "drank", pastParticiple: "drunk", phonetics: "/drɪŋk/", translation: "pít" },
+            { present: "drive", pastSimple: "drove", pastParticiple: "driven", phonetics: "/draɪv/", translation: "řídit" },
+            { present: "eat", pastSimple: "ate", pastParticiple: "eaten", phonetics: "/iːt/", translation: "jíst" },
+            { present: "fall", pastSimple: "fell", pastParticiple: "fallen", phonetics: "/fɔːl/", translation: "padat" },
+            { present: "feel", pastSimple: "felt", pastParticiple: "felt", phonetics: "/fiːl/", translation: "cítit" },
+            { present: "find", pastSimple: "found", pastParticiple: "found", phonetics: "/faɪnd/", translation: "najít" },
+            { present: "fly", pastSimple: "flew", pastParticiple: "flown", phonetics: "/flaɪ/", translation: "letět" },
+            { present: "forget", pastSimple: "forgot", pastParticiple: "forgotten", phonetics: "/fəˈɡet/", translation: "zapomenout" },
+            { present: "get", pastSimple: "got", pastParticiple: "got", phonetics: "/ɡet/", translation: "dostat" },
+            { present: "give", pastSimple: "gave", pastParticiple: "given", phonetics: "/ɡɪv/", translation: "dát" },
+            { present: "go", pastSimple: "went", pastParticiple: "gone", phonetics: "/ɡəʊ/", translation: "jít" },
+            { present: "have", pastSimple: "had", pastParticiple: "had", phonetics: "/hæv/", translation: "mít" },
+            { present: "hear", pastSimple: "heard", pastParticiple: "heard", phonetics: "/hɪə/", translation: "slyšet" },
+            { present: "know", pastSimple: "knew", pastParticiple: "known", phonetics: "/nəʊ/", translation: "vědět" },
+            { present: "leave", pastSimple: "left", pastParticiple: "left", phonetics: "/liːv/", translation: "odejít" },
+            { present: "lose", pastSimple: "lost", pastParticiple: "lost", phonetics: "/luːz/", translation: "ztratit" },
+            { present: "make", pastSimple: "made", pastParticiple: "made", phonetics: "/meɪk/", translation: "udělat" },
+            { present: "meet", pastSimple: "met", pastParticiple: "met", phonetics: "/miːt/", translation: "potkat" },
+            { present: "pay", pastSimple: "paid", pastParticiple: "paid", phonetics: "/peɪ/", translation: "platit" },
+            { present: "put", pastSimple: "put", pastParticiple: "put", phonetics: "/pʊt/", translation: "položit" },
+            { present: "read", pastSimple: "read", pastParticiple: "read", phonetics: "/riːd/", translation: "číst" },
+            { present: "run", pastSimple: "ran", pastParticiple: "run", phonetics: "/rʌn/", translation: "běžet" },
+            { present: "say", pastSimple: "said", pastParticiple: "said", phonetics: "/seɪ/", translation: "říci" },
+            { present: "see", pastSimple: "saw", pastParticiple: "seen", phonetics: "/siː/", translation: "vidět" },
+            { present: "send", pastSimple: "sent", pastParticiple: "sent", phonetics: "/send/", translation: "poslat" },
+            { present: "sing", pastSimple: "sang", pastParticiple: "sung", phonetics: "/sɪŋ/", translation: "zpívat" },
+            { present: "sit", pastSimple: "sat", pastParticiple: "sat", phonetics: "/sɪt/", translation: "sedět" },
+            { present: "sleep", pastSimple: "slept", pastParticiple: "slept", phonetics: "/sliːp/", translation: "spát" },
+            { present: "speak", pastSimple: "spoke", pastParticiple: "spoken", phonetics: "/spiːk/", translation: "mluvit" },
+            { present: "spend", pastSimple: "spent", pastParticiple: "spent", phonetics: "/spend/", translation: "strávit" },
+            { present: "stand", pastSimple: "stood", pastParticiple: "stood", phonetics: "/stænd/", translation: "stát" },
+            { present: "swim", pastSimple: "swam", pastParticiple: "swum", phonetics: "/swɪm/", translation: "plavat" },
+            { present: "take", pastSimple: "took", pastParticiple: "taken", phonetics: "/teɪk/", translation: "vzít" },
+            { present: "teach", pastSimple: "taught", pastParticiple: "taught", phonetics: "/tiːtʃ/", translation: "učit" },
+            { present: "tell", pastSimple: "told", pastParticiple: "told", phonetics: "/tel/", translation: "říct" },
+            { present: "think", pastSimple: "thought", pastParticiple: "thought", phonetics: "/θɪŋk/", translation: "myslet" },
+            { present: "understand", pastSimple: "understood", pastParticiple: "understood", phonetics: "/ˌʌndəˈstænd/", translation: "rozumět" },
+            { present: "wake", pastSimple: "woke", pastParticiple: "woken", phonetics: "/weɪk/", translation: "probudit se" },
+            { present: "wear", pastSimple: "wore", pastParticiple: "worn", phonetics: "/weə/", translation: "nosit" },
+            { present: "win", pastSimple: "won", pastParticiple: "won", phonetics: "/wɪn/", translation: "vyhrát" },
+            { present: "write", pastSimple: "wrote", pastParticiple: "written", phonetics: "/raɪt/", translation: "psát" }
+        ];
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const quizCardEl = document.getElementById('quiz-card');
+
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const speakerBtn = document.getElementById('speaker-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        const scoreEl = document.getElementById('score');
+        const hintsUsedEl = document.getElementById('hints-used');
+        const progressBarEl = document.getElementById('progress-bar');
+        const questionCountEl = document.getElementById('question-count');
+        const formTypeEl = document.getElementById('form-type');
+        const verbEl = document.getElementById('verb');
+        const phoneticsEl = document.getElementById('phonetics');
+        const translationEl = document.getElementById('translation');
+        const optionsEl = document.getElementById('options');
+        const feedbackEl = document.getElementById('feedback');
+
+        const finalScoreEl = document.getElementById('final-score');
+        const correctAnswersEl = document.getElementById('correct-answers');
+        const totalHintsEl = document.getElementById('total-hints');
+        const gradeEl = document.getElementById('grade');
+        const gradeDisplayEl = document.getElementById('grade-display');
+        const animationContainer = document.getElementById('animation-container');
+
+        let quizData = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let hintsUsed = 0;
+        const QUIZ_LENGTH = 20;
+        let currentCorrectAnswer = '';
+
+        // --- Utility Functions ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // --- Sound Effects ---
+        // Gospelly/Heavenly Sound
+        const reverb = new Tone.Reverb({
+            decay: 4,
+            preDelay: 0.1,
+            wet: 0.6
+        }).toDestination();
+
+        const correctSynth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.05, decay: 0.4, sustain: 0.1, release: 1.4 }
+        }).connect(reverb);
+        correctSynth.set({ volume: -10 });
+        
+        // Sinister/Scary Sound
+        const distortion = new Tone.Distortion(0.8).toDestination();
+        const incorrectSynth = new Tone.MonoSynth({
+            oscillator: { type: "sawtooth" },
+            filter: { Q: 2, type: "lowpass", rolloff: -24 },
+            envelope: { attack: 0.01, decay: 0.7, sustain: 0.1, release: 0.8 },
+            filterEnvelope: { attack: 0.02, decay: 0.4, sustain: 0, baseFrequency: 2000, octaves: -1.5 }
+        }).connect(distortion);
+        incorrectSynth.set({ volume: -12 });
+
+        // Comedic Scream
+        const vibrato = new Tone.Vibrato(12, 0.7).toDestination();
+        const screamSynth = new Tone.Synth({
+            oscillator: { type: "triangle" },
+            envelope: { attack: 0.02, decay: 0.3, sustain: 0.1, release: 0.5 }
+        }).connect(vibrato);
+        screamSynth.set({ volume: -18 });
+
+
+        function playCorrectSound() {
+            if (Tone.context.state !== 'running') return;
+            const now = Tone.now();
+            // Play two layered, shimmering chords for a melodic effect
+            correctSynth.triggerAttackRelease(["C4", "E4", "G4", "B4"], "1n", now);
+            correctSynth.triggerAttackRelease(["C5", "E5", "G5", "B5"], "1n", now + 0.15);
+        }
+
+        function playIncorrectSound() {
+            if (Tone.context.state !== 'running') return;
+            const now = Tone.now();
+            // A low, distorted, growling sound
+            incorrectSynth.triggerAttackRelease('C#2', '1n', now);
+            // Layer a comedic, high-pitched "scream"
+            screamSynth.triggerAttackRelease('B5', '8n', now + 0.05);
+        }
+
+
+        // --- Quiz Logic ---
+        async function startQuiz() {
+            // Start Tone.js audio context on user gesture
+            await Tone.start();
+            console.log('Audio context started');
+
+            quizData = shuffleArray([...verbDatabase]).slice(0, QUIZ_LENGTH);
+            currentQuestionIndex = 0;
+            score = 0;
+            hintsUsed = 0;
+            scoreEl.textContent = score;
+            hintsUsedEl.textContent = hintsUsed;
+            startScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            resetState();
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isPastSimple = Math.random() > 0.5;
+            const questionType = isPastSimple ? 'pastSimple' : 'pastParticiple';
+            const correctAnswer = currentQuestion[questionType];
+            currentCorrectAnswer = correctAnswer; // Store the correct answer for the hint function
+
+            // Update UI
+            progressBarEl.style.width = `${((currentQuestionIndex + 1) / QUIZ_LENGTH) * 100}%`;
+            questionCountEl.textContent = `${currentQuestionIndex + 1} / ${QUIZ_LENGTH}`;
+            formTypeEl.innerHTML = isPastSimple 
+                ? `Past Simple <strong class="text-xl text-amber-300">(Druhá Forma)</strong>` 
+                : `Past Participle <strong class="text-xl text-amber-300">(Třetí Forma)</strong>`;
+            verbEl.textContent = currentQuestion.present;
+            phoneticsEl.textContent = currentQuestion.phonetics;
+            translationEl.textContent = currentQuestion.translation;
+
+            // Generate more challenging Options by including other forms of the same verb
+            const options = new Set();
+            options.add(correctAnswer);
+
+            // Add other forms of the same verb as distractors
+            options.add(currentQuestion.present);
+            if (questionType === 'pastSimple') {
+                options.add(currentQuestion.pastParticiple);
+            } else {
+                options.add(currentQuestion.pastSimple);
+            }
+            
+            // Ensure we have 4 unique options by adding forms from different verbs if needed
+            while (options.size < 4) {
+                const randomVerb = verbDatabase[Math.floor(Math.random() * verbDatabase.length)];
+                // Ensure the random verb is not the same as the current verb
+                if (randomVerb.present === currentQuestion.present) {
+                    continue;
+                }
+                const randomForm = randomVerb[Math.random() > 0.5 ? 'pastSimple' : 'pastParticiple'];
+                options.add(randomForm); // Set automatically handles duplicates
+            }
+
+            const shuffledOptions = shuffleArray([...options]);
+
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn', 'p-4', 'rounded-lg', 'text-lg', 'font-semibold', 'w-full');
+                button.addEventListener('click', () => selectAnswer(button, option, correctAnswer));
+                optionsEl.appendChild(button);
+            });
+        }
+
+        function resetState() {
+            optionsEl.innerHTML = '';
+            feedbackEl.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+            quizCardEl.classList.remove('correct-answer', 'wrong-answer');
+            animationContainer.innerHTML = '';
+        }
+
+        function selectAnswer(button, selectedOption, correctAnswer) {
+            const allOptions = optionsEl.querySelectorAll('button');
+            allOptions.forEach(btn => {
+                btn.disabled = true; // Disable all buttons
+                if (btn.textContent === correctAnswer) {
+                    btn.classList.add('correct');
+                } else {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            if (selectedOption === correctAnswer) {
+                score += 10;
+                scoreEl.textContent = score;
+                feedbackEl.textContent = "Correct!";
+                feedbackEl.style.color = "#00ff80";
+                quizCardEl.classList.add('correct-answer');
+                createParticles({ count: 40, type: 'sparkle', originElement: quizCardEl });
+                playCorrectSound();
+            } else {
+                feedbackEl.textContent = `Correct answer: ${correctAnswer}`;
+                feedbackEl.style.color = "#ff4d4d";
+                quizCardEl.classList.add('wrong-answer');
+                createParticles({ count: 50, type: 'ember', originElement: quizCardEl });
+                playIncorrectSound();
+            }
+            feedbackEl.classList.remove('hidden');
+            
+            // Automatically move to the next question after a short delay
+            setTimeout(handleNext, 1500);
+        }
+
+        function handleNext() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < QUIZ_LENGTH) {
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+
+            const correctCount = score / 10;
+            // Penalize score for hints. Each hint is like half a wrong answer.
+            const adjustedScore = Math.max(0, score - (hintsUsed * 5));
+            const percentage = (adjustedScore / (QUIZ_LENGTH * 10)) * 100;
+
+            let grade = 'F';
+            let gradeClass = 'grade-f';
+
+            if (percentage >= 90) { grade = 'A'; gradeClass = 'grade-a'; }
+            else if (percentage >= 80) { grade = 'B'; gradeClass = 'grade-b'; }
+            else if (percentage >= 70) { grade = 'C'; gradeClass = 'grade-c'; }
+            else if (percentage >= 60) { grade = 'D'; gradeClass = 'grade-d'; }
+
+            finalScoreEl.textContent = adjustedScore;
+            correctAnswersEl.textContent = correctCount;
+            totalHintsEl.textContent = hintsUsed;
+            gradeEl.textContent = grade;
+            
+            gradeDisplayEl.className = 'grade-circle'; // Reset classes
+            gradeDisplayEl.classList.add(gradeClass);
+        }
+
+        function speakHint() {
+            const verbToSpeak = currentCorrectAnswer.split('/')[0]; // Use the correct answer and handle cases like "was/were"
+            if ('speechSynthesis' in window && verbToSpeak) {
+                const utterance = new SpeechSynthesisUtterance(verbToSpeak);
+                utterance.lang = 'en-US';
+                window.speechSynthesis.speak(utterance);
+                hintsUsed++;
+                hintsUsedEl.textContent = hintsUsed;
+            } else {
+                alert("Sorry, your browser doesn't support Text-to-Speech.");
+            }
+        }
+
+        // --- Animation Function ---
+        function createParticles(options) {
+            const { count, type, originElement } = options;
+            const rect = originElement.getBoundingClientRect();
+            const originX = rect.left + rect.width / 2;
+            const originY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle', type);
+
+                p.style.left = `${originX}px`;
+                p.style.top = `${originY}px`;
+
+                if (type === 'sparkle') {
+                    const size = Math.random() * 4 + 2;
+                    p.style.width = `${size}px`;
+                    p.style.height = `${size}px`;
+
+                    const angle = Math.random() * 360;
+                    const radius = Math.random() * 150 + 100;
+                    const xEnd = Math.cos(angle * (Math.PI / 180)) * radius;
+                    const yEnd = Math.sin(angle * (Math.PI / 180)) * radius;
+                    
+                    p.style.setProperty('--transform-end', `translate(${xEnd}px, ${yEnd}px) scale(0)`);
+                    p.style.animationDuration = `${Math.random() * 0.8 + 0.7}s`;
+
+                } else if (type === 'ember') {
+                    const size = Math.random() * 6 + 3;
+                    p.style.width = `${size}px`;
+                    p.style.height = `${size}px`;
+                    
+                    const xEnd = (Math.random() - 0.5) * 100;
+                    const yEnd = -200 - Math.random() * 100;
+
+                    p.style.setProperty('--transform-end', `translate(${xEnd}px, ${yEnd}px) rotate(${(Math.random() - 0.5) * 360}deg)`);
+                    p.style.animationDuration = `${Math.random() * 1 + 1.5}s`;
+                }
+                
+                animationContainer.appendChild(p);
+
+                setTimeout(() => {
+                    p.remove();
+                }, 2500);
+            }
+        }
+
+        // --- Event Listeners ---
+        startBtn.addEventListener('click', startQuiz);
+        restartBtn.addEventListener('click', startQuiz);
+        speakerBtn.addEventListener('click', speakHint);
+        nextBtn.addEventListener('click', handleNext);
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
