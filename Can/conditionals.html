@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Grammar Quiz: Conditional Sentences</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the quiz items */
+        .quiz-item {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        /* Add a hover effect for non-matched items */
+        .starter-item:not(.matched):hover {
+            @apply shadow-md scale-[1.03] bg-gray-50;
+        }
+        .ender-item:not(.matched):hover {
+            @apply bg-gray-50;
+        }
+
+        /* Style for the 'selected' starter item */
+        .starter-item.selected {
+            @apply ring-2 ring-blue-500 bg-blue-100 scale-[1.03] shadow-lg;
+        }
+
+        /* Style for a 'correct' match */
+        .quiz-item.correct {
+            @apply bg-green-100 border-green-300 opacity-70 cursor-not-allowed;
+        }
+
+        /* Style for an 'incorrect' temporary flash */
+        .quiz-item.incorrect {
+            @apply bg-red-100 border-red-300 ring-2 ring-red-500;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans flex items-center justify-center min-h-screen py-12 px-4">
+
+    <div class="bg-white p-6 sm:p-10 rounded-2xl shadow-xl w-full max-w-5xl">
+
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Grammar Quiz: Conditional Sentences</h1>
+            <p class="text-gray-600 mt-2">Click a sentence start, then click its matching end.</p>
+        </div>
+
+        <!-- Feedback Area -->
+        <div id="feedback-area" class="text-center h-8 mb-4 text-lg font-medium">&nbsp;</div>
+
+        <!-- Quiz Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+            <!-- Column 1: Sentence Starters -->
+            <div id="starters-container" class="space-y-3">
+                <h2 class="text-lg font-semibold text-gray-700 text-center mb-3">Sentence Beginnings</h2>
+                <!-- Starters will be dynamically injected here -->
+            </div>
+
+            <!-- Column 2: Sentence Enders -->
+            <div id="enders-container" class="space-y-3">
+                <h2 class="text-lg font-semibold text-gray-700 text-center mb-3">Sentence Endings</h2>
+                <!-- Enders will be dynamically injected here -->
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="text-center mt-8">
+            <button id="reset-btn" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-all">
+                Reset Quiz
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. DATA ---
+            const quizData = [
+                { id: 1, start: 'If you can’t understand the instructions,', end: 'phone the special help line.' },
+                { id: 2, start: 'At that price, if I were you,', end: 'I’d get one from somewhere else.' },
+                { id: 3, start: 'If it hadn’t been stopped sooner,', end: 'the fire would have got out of control.' },
+                { id: 4, start: 'If I didn’t know you better,', end: 'I would say you did it on purpose.' },
+                { id: 5, start: 'I know that if I don’t finish it today,', end: 'I’ll regret it.' },
+                { id: 6, start: 'As long as it still works,', end: 'I don’t care how old it is.' },
+                { id: 7, start: 'Providing it’s safe,', end: 'I’ll do it.' },
+                { id: 8, start: 'Had I lied to the police at the questioning,', end: 'I would feel ashamed of myself now.' },
+                { id: 9, start: 'Suppose I had some evidence,', end: 'would you believe me then?' },
+                { id: 10, start: 'Even if the rollercoaster is now safe,', end: 'we can’t be sure accidents won’t happen again.' }
+            ];
+
+            // --- 2. STATE VARIABLES ---
+            let selectedStarter = null;
+            let score = 0;
+            const totalQuestions = quizData.length;
+
+            // --- 3. DOM ELEMENTS ---
+            const startersContainer = document.getElementById('starters-container');
+            const endersContainer = document.getElementById('enders-container');
+            const feedbackArea = document.getElementById('feedback-area');
+            const resetButton = document.getElementById('reset-btn');
+
+            // --- 4. HELPER FUNCTIONS ---
+
+            /**
+             * Shuffles an array in place using the Fisher-Yates algorithm.
+             * @param {Array} array The array to shuffle.
+             */
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            /**
+             * Creates a single quiz item element.
+             * @param {object} item - The item data {id, text}.
+             * @param {string} type - 'starter' or 'ender'.
+             * @returns {HTMLElement} The created div element.
+             */
+            function createQuizItem(item, type) {
+                const div = document.createElement('div');
+                div.className = `quiz-item ${type}-item p-4 rounded-lg border border-gray-300 cursor-pointer bg-white shadow-sm`;
+                div.dataset.id = item.id;
+                div.textContent = item.text;
+                return div;
+            }
+
+            /**
+             * Updates the feedback message to the user.
+             * @param {string} message - The text to display.
+             * @param {string} colorClass - Tailwind text color class (e.g., 'text-green-600').
+             */
+            function updateFeedback(message, colorClass) {
+                feedbackArea.textContent = message;
+                feedbackArea.className = `text-center h-8 mb-4 text-lg font-medium ${colorClass}`;
+            }
+
+            // --- 5. CORE QUIZ LOGIC ---
+
+            /**
+             * Initializes or resets the quiz.
+             */
+            function initQuiz() {
+                // Reset state
+                score = 0;
+                selectedStarter = null;
+                updateFeedback('Click a sentence start, then its matching end.', 'text-gray-600');
+                
+                // Clear containers
+                startersContainer.innerHTML = '<h2 class="text-lg font-semibold text-gray-700 text-center mb-3">Sentence Beginnings</h2>';
+                endersContainer.innerHTML = '<h2 class="text-lg font-semibold text-gray-700 text-center mb-3">Sentence Endings</h2>';
+
+                // Create and shuffle starters and enders
+                const starters = quizData.map(item => ({ id: item.id, text: item.start }));
+                const enders = quizData.map(item => ({ id: item.id, text: item.end }));
+                
+                shuffleArray(starters);
+                shuffleArray(enders);
+
+                // Populate containers
+                starters.forEach(item => {
+                    startersContainer.appendChild(createQuizItem(item, 'starter'));
+                });
+                enders.forEach(item => {
+                    endersContainer.appendChild(createQuizItem(item, 'ender'));
+                });
+            }
+
+            /**
+             * Handles clicks on the 'starters' column.
+             * @param {Event} e - The click event.
+             */
+            function handleStarterClick(e) {
+                const clickedItem = e.target.closest('.starter-item');
+
+                // Ignore if not a valid item or already matched
+                if (!clickedItem || clickedItem.classList.contains('correct')) {
+                    return;
+                }
+
+                // Deselect if clicking the same selected item
+                if (selectedStarter === clickedItem) {
+                    selectedStarter.classList.remove('selected', 'bg-blue-100', 'ring-2', 'ring-blue-500', 'scale-[1.03]', 'shadow-lg');
+                    selectedStarter = null;
+                    return;
+                }
+
+                // Remove selection from any previously selected item
+                if (selectedStarter) {
+                    selectedStarter.classList.remove('selected', 'bg-blue-100', 'ring-2', 'ring-blue-500', 'scale-[1.03]', 'shadow-lg');
+                }
+
+                // Select the new item
+                selectedStarter = clickedItem;
+                selectedStarter.classList.add('selected', 'bg-blue-100', 'ring-2', 'ring-blue-500', 'scale-[1.03]', 'shadow-lg');
+            }
+
+            /**
+             * Handles clicks on the 'enders' column and checks for matches.
+             * @param {Event} e - The click event.
+             */
+            function handleEnderClick(e) {
+                const clickedItem = e.target.closest('.ender-item');
+
+                // Ignore if no starter is selected, or not a valid item, or already matched
+                if (!selectedStarter || !clickedItem || clickedItem.classList.contains('correct')) {
+                    return;
+                }
+
+                const starterId = selectedStarter.dataset.id;
+                const enderId = clickedItem.dataset.id;
+
+                // Clear selection style from starter
+                selectedStarter.classList.remove('selected', 'bg-blue-100', 'ring-2', 'ring-blue-500', 'scale-[1.03]', 'shadow-lg');
+
+                if (starterId === enderId) {
+                    // --- CORRECT MATCH ---
+                    score++;
+                    updateFeedback(`Correct! (${score}/${totalQuestions})`, 'text-green-600');
+                    
+                    selectedStarter.classList.add('correct');
+                    clickedItem.classList.add('correct');
+                    
+                    selectedStarter = null;
+
+                    if (score === totalQuestions) {
+                        updateFeedback('Congratulations! You matched all sentences!', 'text-green-700 font-bold');
+                    }
+
+                } else {
+                    // --- INCORRECT MATCH ---
+                    updateFeedback('Not a match. Try again.', 'text-red-600');
+                    
+                    selectedStarter.classList.add('incorrect');
+                    clickedItem.classList.add('incorrect');
+
+                    // Remove incorrect styling after a short delay
+                    setTimeout(() => {
+                        // Check if selectedStarter still exists (user might have reset)
+                        if (selectedStarter) {
+                            selectedStarter.classList.remove('incorrect');
+                        }
+                        clickedItem.classList.remove('incorrect');
+                    }, 1000);
+                    
+                    selectedStarter = null;
+                }
+            }
+
+            // --- 6. EVENT LISTENERS ---
+            startersContainer.addEventListener('click', handleStarterClick);
+            endersContainer.addEventListener('click', handleEnderClick);
+            resetButton.addEventListener('click', initQuiz);
+
+            // --- 7. INITIALIZE QUIZ ---
+            initQuiz();
+
+        });
+    </script>
+</body>
+</html>
