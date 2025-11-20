@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irregular Verbs Quiz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        :root {
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-teal-800: rgba(41, 150, 161, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            --color-slate-900-rgb: 19, 52, 59;
+            --color-slate-500-rgb: 98, 108, 113;
+            --color-red-500-rgb: 192, 21, 47;
+            --color-red-400-rgb: 255, 84, 89;
+            --color-orange-500-rgb: 168, 75, 47;
+            --color-orange-400-rgb: 230, 129, 97;
+            --color-bg-1: rgba(59, 130, 246, 0.08);
+            --color-bg-2: rgba(245, 158, 11, 0.08);
+            --color-bg-3: rgba(34, 197, 94, 0.08);
+            --color-bg-4: rgba(239, 68, 68, 0.08);
+            --color-bg-5: rgba(147, 51, 234, 0.08);
+            --color-bg-6: rgba(249, 115, 22, 0.08);
+            --color-bg-7: rgba(236, 72, 153, 0.08);
+            --color-bg-8: rgba(6, 182, 212, 0.08);
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-primary-active: var(--color-teal-700);
+            --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-btn-primary-text: var(--color-cream-50);
+            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-error: var(--color-red-500);
+            --color-success: var(--color-teal-500);
+            --color-warning: var(--color-orange-500);
+            --color-info: var(--color-slate-500);
+            --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+            --focus-ring: 0 0 0 3px var(--color-focus-ring);
+            --focus-outline: 2px solid var(--color-primary);
+            --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-size-base: 14px;
+            --font-size-sm: 12px;
+            --font-size-md: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+            --font-size-2xl: 20px;
+            --font-size-3xl: 24px;
+            --font-size-4xl: 30px;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 550;
+            --font-weight-bold: 600;
+            --line-height-tight: 1.2;
+            --line-height-normal: 1.5;
+            --space-4: 4px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+            --radius-sm: 6px;
+            --radius-base: 8px;
+            --radius-md: 10px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            --duration-fast: 150ms;
+            --duration-normal: 250ms;
+            --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-gray-400-rgb: 119, 124, 124;
+                --color-teal-300-rgb: 50, 184, 198;
+                --color-gray-300-rgb: 167, 169, 169;
+                --color-gray-200-rgb: 245, 245, 245;
+                --color-bg-1: rgba(29, 78, 216, 0.15);
+                --color-bg-2: rgba(180, 83, 9, 0.15);
+                --color-bg-3: rgba(21, 128, 61, 0.15);
+                --color-bg-4: rgba(185, 28, 28, 0.15);
+                --color-bg-5: rgba(107, 33, 168, 0.15);
+                --color-bg-6: rgba(194, 65, 12, 0.15);
+                --color-bg-7: rgba(190, 24, 93, 0.15);
+                --color-bg-8: rgba(8, 145, 178, 0.15);
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+                --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+                --color-primary: var(--color-teal-300);
+                --color-primary-hover: var(--color-teal-400);
+                --color-primary-active: var(--color-teal-800);
+                --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+                --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+                --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-error: var(--color-red-400);
+                --color-success: var(--color-teal-300);
+                --color-warning: var(--color-orange-400);
+                --color-info: var(--color-gray-300);
+                --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+                --color-btn-primary-text: var(--color-slate-900);
+                --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+                --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', var(--font-family-base);
+            background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
+            min-height: 100vh;
+            color: var(--color-text);
+            padding: var(--space-20);
+            position: relative;
+            overflow-x: hidden;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-32);
+            animation: slideUp 0.8s ease-out;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: var(--space-32);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+
+        .mute-toggle {
+            position: absolute;
+            top: var(--space-20);
+            right: var(--space-20);
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .mute-toggle:hover {
+            background: rgba(0, 0, 0, 0.7);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+        }
+
+        .sound-icon {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .mute-toggle.muted .sound-waves {
+            display: none;
+        }
+
+        .mute-toggle.muted .mute-line {
+            display: block !important;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: var(--space-12);
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.02em;
+            color: white;
+        }
+
+        .header p {
+            font-size: var(--font-size-lg);
+            font-weight: 500;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-16);
+            margin-bottom: var(--space-32);
+            animation: slideUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: var(--space-20);
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .stat-card .label {
+            font-size: var(--font-size-sm);
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: var(--space-8);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover .value {
+            transform: scale(1.1);
+        }
+
+        .quiz-container {
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: var(--space-32);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            animation: scaleIn 0.5s ease-out 0.3s backwards;
+        }
+
+        .section-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-24);
+            margin-bottom: var(--space-24);
+        }
+
+        .section-btn {
+            padding: 32px var(--space-24);
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-12);
+        }
+
+        .section-btn:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.3);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-color: transparent;
+        }
+
+        .section-number {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: var(--space-8);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+        }
+
+        .section-desc {
+            font-size: var(--font-size-sm);
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .mode-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-16);
+            margin-bottom: var(--space-24);
+        }
+
+        .back-btn {
+            width: 100%;
+            padding: 14px var(--space-20);
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            margin-top: var(--space-16);
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateX(-4px);
+        }
+
+        .mode-btn {
+            padding: 28px var(--space-24);
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-12);
+        }
+
+        .mode-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .mode-btn:hover::before {
+            left: 100%;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.3);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .mode-btn:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        .mode-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: var(--space-8);
+        }
+
+        .progress-container {
+            margin-bottom: var(--space-24);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-8);
+            font-size: var(--font-size-sm);
+            color: white;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6);
+            background-size: 200% 100%;
+            animation: shimmer 2s linear infinite;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+            border-radius: var(--radius-full);
+        }
+
+        .question-card {
+            margin-bottom: var(--space-24);
+        }
+
+        .question-text {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: var(--space-24);
+            color: white;
+            line-height: 1.4;
+            animation: slideUp 0.5s ease-out;
+            background: rgba(0, 0, 0, 0.4);
+            padding: var(--space-20);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .options-grid {
+            display: grid;
+            gap: var(--space-12);
+            margin-bottom: var(--space-24);
+        }
+
+        .option-btn {
+            padding: 20px var(--space-24);
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.4s ease-out backwards;
+        }
+
+        .option-btn:nth-child(1) { animation-delay: 0.1s; }
+        .option-btn:nth-child(2) { animation-delay: 0.15s; }
+        .option-btn:nth-child(3) { animation-delay: 0.2s; }
+        .option-btn:nth-child(4) { animation-delay: 0.25s; }
+
+        .option-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .option-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .option-btn:hover {
+            transform: translateX(8px);
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.65);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border-color: #6366f1;
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-color: #10b981;
+            animation: correctPulse 0.6s ease;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.5);
+        }
+
+        .option-btn.incorrect {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border-color: #ef4444;
+            animation: shake 0.5s ease;
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.5);
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); box-shadow: 0 12px 32px rgba(16, 185, 129, 0.6); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .feedback {
+            padding: 20px;
+            border-radius: 14px;
+            margin-bottom: var(--space-16);
+            font-weight: 600;
+            font-size: 16px;
+            animation: slideUp 0.4s ease-out;
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+        }
+
+        .feedback.correct {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+            color: #059669;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.1);
+        }
+
+        .feedback.incorrect {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+            color: #dc2626;
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.1);
+        }
+
+        .feedback-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 18px var(--space-24);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(99, 102, 241, 0.4);
+        }
+
+        .action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .action-btn:disabled:hover {
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .results {
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 220px;
+            height: 220px;
+            margin: 0 auto var(--space-32);
+            border-radius: 50%;
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4), inset 0 0 60px rgba(255, 255, 255, 0.1);
+            animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            padding: 4px;
+            background: linear-gradient(135deg, #06b6d4, #3b82f6, #8b5cf6, #06b6d4);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.6;
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .score-circle .score {
+            font-size: 64px;
+            font-weight: 800;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .score-circle .total {
+            font-size: 24px;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .message {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: var(--space-32);
+            color: white;
+            animation: slideUp 0.6s ease-out 0.3s backwards;
+            line-height: 1.3;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-16);
+            margin-bottom: var(--space-24);
+        }
+
+        .result-card {
+            padding: var(--space-24);
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            animation: slideUp 0.5s ease-out backwards;
+        }
+
+        .result-card:nth-child(1) { animation-delay: 0.4s; }
+        .result-card:nth-child(2) { animation-delay: 0.5s; }
+        .result-card:nth-child(3) { animation-delay: 0.6s; }
+
+        .result-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.65);
+        }
+
+        .result-card .label {
+            font-size: var(--font-size-sm);
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-8);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .result-card .value {
+            font-size: 36px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-16);
+            animation: slideUp 0.5s ease-out 0.7s backwards;
+        }
+
+        .secondary-btn {
+            background: rgba(0, 0, 0, 0.5) !important;
+            color: white !important;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .secondary-btn:hover {
+            background: rgba(0, 0, 0, 0.7) !important;
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: var(--space-12);
+            }
+
+            .quiz-container {
+                padding: var(--space-20);
+            }
+
+            .header h1 {
+                font-size: var(--font-size-2xl);
+            }
+
+            .buttons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Irregular Verbs Master</h1>
+            <p>Master English irregular verbs with this interactive quiz!</p>
+            <button id="muteToggle" class="mute-toggle" onclick="toggleMute()" title="Toggle sound">
+                <svg class="sound-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path class="sound-waves" d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53M19.07 4.93C20.9447 6.80528 21.9979 9.34836 21.9979 12C21.9979 14.6516 20.9447 17.1947 19.07 19.07" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path class="mute-line" d="M1 1L23 23" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display: none;"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Total Attempts</div>
+                <div class="value" id="totalAttempts">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Best Score</div>
+                <div class="value" id="bestScore">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Average Score</div>
+                <div class="value" id="avgScore">0%</div>
+            </div>
+        </div>
+
+        <div class="quiz-container">
+            <div id="sectionScreen">
+                <h2 style="margin-bottom: 32px; text-align: center; font-size: 24px; font-weight: 700; color: white;">Choose Your Section</h2>
+                <div class="section-selector">
+                    <button class="section-btn" onclick="selectSection(1)">
+                        <span class="section-number">Section 1</span>
+                        <span class="section-title">Core Verbs</span>
+                        <span class="section-desc">First 40 verbs (alphabetically)</span>
+                    </button>
+                    <button class="section-btn" onclick="selectSection(2)">
+                        <span class="section-number">Section 2</span>
+                        <span class="section-title">Advanced Verbs</span>
+                        <span class="section-desc">Remaining verbs</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="modeScreen" class="hidden">
+                <h2 style="margin-bottom: 24px; text-align: center; font-size: 24px; font-weight: 700; color: white;" id="modeTitle">Choose Your Mode</h2>
+                <div class="mode-selector">
+                    <button class="mode-btn" onclick="startQuiz('base-to-past')">
+                        <svg class="mode-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 6.5C12 5.83696 12.2634 5.20107 12.7322 4.73223C13.2011 4.26339 13.837 4 14.5 4H20C20.2652 4 20.5196 4.10536 20.7071 4.29289C20.8946 4.48043 21 4.73478 21 5V19C21 19.2652 20.8946 19.5196 20.7071 19.7071C20.5196 19.8946 20.2652 20 20 20H14.5C13.837 20 13.2011 19.7366 12.7322 19.2678C12.2634 18.7989 12 18.163 12 17.5V6.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 12H3M3 12L7 8M3 12L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Base → Past Simple</span>
+                    </button>
+                    <button class="mode-btn" onclick="startQuiz('base-to-participle')">
+                        <svg class="mode-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 17.5L4 12.5M4 12.5L9 7.5M4 12.5H14.5M20 6.5V17.5C20 18.163 19.7366 18.7989 19.2678 19.2678C18.7989 19.7366 18.163 20 17.5 20H12V4H17.5C18.163 4 18.7989 4.26339 19.2678 4.73223C19.7366 5.20107 20 5.83696 20 6.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Base → Past Participle</span>
+                    </button>
+                    <button class="mode-btn" onclick="startQuiz('mixed')">
+                        <svg class="mode-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 17L9 11L13 15L21 7M21 7H15M21 7V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Mixed Challenge</span>
+                    </button>
+                </div>
+                <button class="back-btn" onclick="backToSections()">← Back to Sections</button>
+            </div>
+
+            <div id="quizScreen" class="hidden">
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <span id="questionNumber">Question 1/20</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-text" id="questionText"></div>
+                    <div class="options-grid" id="optionsContainer"></div>
+                    <div id="feedbackContainer"></div>
+                </div>
+            </div>
+
+            <div id="resultsScreen" class="hidden">
+                <div class="results">
+                    <div class="score-circle">
+                        <div class="score" id="finalScore">0</div>
+                        <div class="total">/20</div>
+                    </div>
+                    <div class="message" id="resultMessage"></div>
+                    <div class="results-grid">
+                        <div class="result-card">
+                            <div class="label">Correct</div>
+                            <div class="value" style="color: var(--color-success);" id="correctCount">0</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="label">Incorrect</div>
+                            <div class="value" style="color: var(--color-error);" id="incorrectCount">0</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="label">Percentage</div>
+                            <div class="value" style="color: var(--color-primary);" id="percentageScore">0%</div>
+                        </div>
+                    </div>
+                    <div class="buttons-grid">
+                        <button class="action-btn" onclick="resetQuiz()">Retry Same Section</button>
+                        <button class="action-btn secondary-btn" onclick="changeSection()">Choose Different Section</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Section 1: First 40 verbs alphabetically
+        const SECTION1_VERBS = [
+            {base: 'be', past: 'was/were', participle: 'been'},
+            {base: 'begin', past: 'began', participle: 'begun'},
+            {base: 'bite', past: 'bit', participle: 'bitten'},
+            {base: 'blow', past: 'blew', participle: 'blown'},
+            {base: 'break', past: 'broke', participle: 'broken'},
+            {base: 'bring', past: 'brought', participle: 'brought'},
+            {base: 'build', past: 'built', participle: 'built'},
+            {base: 'buy', past: 'bought', participle: 'bought'},
+            {base: 'catch', past: 'caught', participle: 'caught'},
+            {base: 'choose', past: 'chose', participle: 'chosen'},
+            {base: 'come', past: 'came', participle: 'come'},
+            {base: 'cost', past: 'cost', participle: 'cost'},
+            {base: 'cut', past: 'cut', participle: 'cut'},
+            {base: 'do', past: 'did', participle: 'done'},
+            {base: 'draw', past: 'drew', participle: 'drawn'},
+            {base: 'drive', past: 'drove', participle: 'driven'},
+            {base: 'eat', past: 'ate', participle: 'eaten'},
+            {base: 'fall', past: 'fell', participle: 'fallen'},
+            {base: 'feel', past: 'felt', participle: 'felt'},
+            {base: 'fight', past: 'fought', participle: 'fought'},
+            {base: 'find', past: 'found', participle: 'found'},
+            {base: 'fly', past: 'flew', participle: 'flown'},
+            {base: 'forget', past: 'forgot', participle: 'forgotten'},
+            {base: 'get', past: 'got', participle: 'gotten'},
+            {base: 'give', past: 'gave', participle: 'given'},
+            {base: 'go', past: 'went', participle: 'gone'},
+            {base: 'grow', past: 'grew', participle: 'grown'},
+            {base: 'have', past: 'had', participle: 'had'},
+            {base: 'hear', past: 'heard', participle: 'heard'},
+            {base: 'hide', past: 'hid', participle: 'hidden'},
+            {base: 'hold', past: 'held', participle: 'held'},
+            {base: 'hurt', past: 'hurt', participle: 'hurt'},
+            {base: 'keep', past: 'kept', participle: 'kept'},
+            {base: 'know', past: 'knew', participle: 'known'},
+            {base: 'lead', past: 'led', participle: 'led'},
+            {base: 'leave', past: 'left', participle: 'left'},
+            {base: 'let', past: 'let', participle: 'let'},
+            {base: 'lie', past: 'lay', participle: 'lain'},
+            {base: 'lose', past: 'lost', participle: 'lost'},
+            {base: 'make', past: 'made', participle: 'made'}
+        ];
+
+        // Section 2: Remaining verbs
+        const SECTION2_VERBS = [
+            {base: 'mean', past: 'meant', participle: 'meant'},
+            {base: 'meet', past: 'met', participle: 'met'},
+            {base: 'pay', past: 'paid', participle: 'paid'},
+            {base: 'put', past: 'put', participle: 'put'},
+            {base: 'read', past: 'read', participle: 'read'},
+            {base: 'ride', past: 'rode', participle: 'ridden'},
+            {base: 'ring', past: 'rang', participle: 'rung'},
+            {base: 'rise', past: 'rose', participle: 'risen'},
+            {base: 'run', past: 'ran', participle: 'run'},
+            {base: 'say', past: 'said', participle: 'said'},
+            {base: 'see', past: 'saw', participle: 'seen'},
+            {base: 'seek', past: 'sought', participle: 'sought'},
+            {base: 'sell', past: 'sold', participle: 'sold'},
+            {base: 'send', past: 'sent', participle: 'sent'},
+            {base: 'set', past: 'set', participle: 'set'},
+            {base: 'shake', past: 'shook', participle: 'shaken'},
+            {base: 'shine', past: 'shone', participle: 'shone'},
+            {base: 'show', past: 'showed', participle: 'shown'},
+            {base: 'shut', past: 'shut', participle: 'shut'},
+            {base: 'sing', past: 'sang', participle: 'sung'},
+            {base: 'sink', past: 'sank', participle: 'sunk'},
+            {base: 'sit', past: 'sat', participle: 'sat'},
+            {base: 'sleep', past: 'slept', participle: 'slept'},
+            {base: 'speak', past: 'spoke', participle: 'spoken'},
+            {base: 'spell', past: 'spelt', participle: 'spelt'},
+            {base: 'spend', past: 'spent', participle: 'spent'},
+            {base: 'stand', past: 'stood', participle: 'stood'},
+            {base: 'steal', past: 'stole', participle: 'stolen'},
+            {base: 'stick', past: 'stuck', participle: 'stuck'},
+            {base: 'sting', past: 'stung', participle: 'stung'},
+            {base: 'stink', past: 'stank', participle: 'stunk'},
+            {base: 'strike', past: 'struck', participle: 'struck'},
+            {base: 'swim', past: 'swam', participle: 'swum'},
+            {base: 'swing', past: 'swung', participle: 'swung'},
+            {base: 'take', past: 'took', participle: 'taken'},
+            {base: 'teach', past: 'taught', participle: 'taught'},
+            {base: 'tear', past: 'tore', participle: 'torn'},
+            {base: 'tell', past: 'told', participle: 'told'},
+            {base: 'think', past: 'thought', participle: 'thought'},
+            {base: 'throw', past: 'threw', participle: 'thrown'},
+            {base: 'understand', past: 'understood', participle: 'understood'},
+            {base: 'wake', past: 'woke', participle: 'woken'},
+            {base: 'wear', past: 'wore', participle: 'worn'},
+            {base: 'win', past: 'won', participle: 'won'},
+            {base: 'write', past: 'wrote', participle: 'written'}
+        ];
+
+        // All 80 irregular verbs (for backwards compatibility)
+        const VERBS = [
+            {base: 'be', past: 'was/were', participle: 'been', difficulty: 'hard'},
+            {base: 'begin', past: 'began', participle: 'begun', difficulty: 'medium'},
+            {base: 'bite', past: 'bit', participle: 'bitten', difficulty: 'medium'},
+            {base: 'blow', past: 'blew', participle: 'blown', difficulty: 'medium'},
+            {base: 'break', past: 'broke', participle: 'broken', difficulty: 'easy'},
+            {base: 'bring', past: 'brought', participle: 'brought', difficulty: 'easy'},
+            {base: 'build', past: 'built', participle: 'built', difficulty: 'easy'},
+            {base: 'buy', past: 'bought', participle: 'bought', difficulty: 'easy'},
+            {base: 'catch', past: 'caught', participle: 'caught', difficulty: 'medium'},
+            {base: 'choose', past: 'chose', participle: 'chosen', difficulty: 'medium'},
+            {base: 'come', past: 'came', participle: 'come', difficulty: 'easy'},
+            {base: 'cost', past: 'cost', participle: 'cost', difficulty: 'hard'},
+            {base: 'cut', past: 'cut', participle: 'cut', difficulty: 'hard'},
+            {base: 'do', past: 'did', participle: 'done', difficulty: 'easy'},
+            {base: 'draw', past: 'drew', participle: 'drawn', difficulty: 'medium'},
+            {base: 'drive', past: 'drove', participle: 'driven', difficulty: 'medium'},
+            {base: 'eat', past: 'ate', participle: 'eaten', difficulty: 'easy'},
+            {base: 'fall', past: 'fell', participle: 'fallen', difficulty: 'medium'},
+            {base: 'feel', past: 'felt', participle: 'felt', difficulty: 'easy'},
+            {base: 'fight', past: 'fought', participle: 'fought', difficulty: 'medium'},
+            {base: 'find', past: 'found', participle: 'found', difficulty: 'easy'},
+            {base: 'fly', past: 'flew', participle: 'flown', difficulty: 'medium'},
+            {base: 'forget', past: 'forgot', participle: 'forgotten', difficulty: 'medium'},
+            {base: 'get', past: 'got', participle: 'gotten', difficulty: 'easy'},
+            {base: 'give', past: 'gave', participle: 'given', difficulty: 'easy'},
+            {base: 'go', past: 'went', participle: 'gone', difficulty: 'easy'},
+            {base: 'grow', past: 'grew', participle: 'grown', difficulty: 'easy'},
+            {base: 'have', past: 'had', participle: 'had', difficulty: 'easy'},
+            {base: 'hear', past: 'heard', participle: 'heard', difficulty: 'easy'},
+            {base: 'hide', past: 'hid', participle: 'hidden', difficulty: 'medium'},
+            {base: 'hold', past: 'held', participle: 'held', difficulty: 'easy'},
+            {base: 'hurt', past: 'hurt', participle: 'hurt', difficulty: 'hard'},
+            {base: 'keep', past: 'kept', participle: 'kept', difficulty: 'easy'},
+            {base: 'know', past: 'knew', participle: 'known', difficulty: 'easy'},
+            {base: 'lead', past: 'led', participle: 'led', difficulty: 'easy'},
+            {base: 'leave', past: 'left', participle: 'left', difficulty: 'easy'},
+            {base: 'let', past: 'let', participle: 'let', difficulty: 'hard'},
+            {base: 'lie', past: 'lay', participle: 'lain', difficulty: 'hard'},
+            {base: 'lose', past: 'lost', participle: 'lost', difficulty: 'easy'},
+            {base: 'make', past: 'made', participle: 'made', difficulty: 'easy'},
+            {base: 'mean', past: 'meant', participle: 'meant', difficulty: 'medium'},
+            {base: 'meet', past: 'met', participle: 'met', difficulty: 'easy'},
+            {base: 'pay', past: 'paid', participle: 'paid', difficulty: 'easy'},
+            {base: 'put', past: 'put', participle: 'put', difficulty: 'hard'},
+            {base: 'read', past: 'read', participle: 'read', difficulty: 'hard'},
+            {base: 'ride', past: 'rode', participle: 'ridden', difficulty: 'medium'},
+            {base: 'ring', past: 'rang', participle: 'rung', difficulty: 'medium'},
+            {base: 'rise', past: 'rose', participle: 'risen', difficulty: 'medium'},
+            {base: 'run', past: 'ran', participle: 'run', difficulty: 'easy'},
+            {base: 'say', past: 'said', participle: 'said', difficulty: 'easy'},
+            {base: 'see', past: 'saw', participle: 'seen', difficulty: 'easy'},
+            {base: 'seek', past: 'sought', participle: 'sought', difficulty: 'medium'},
+            {base: 'sell', past: 'sold', participle: 'sold', difficulty: 'easy'},
+            {base: 'send', past: 'sent', participle: 'sent', difficulty: 'easy'},
+            {base: 'set', past: 'set', participle: 'set', difficulty: 'hard'},
+            {base: 'shake', past: 'shook', participle: 'shaken', difficulty: 'medium'},
+            {base: 'shine', past: 'shone', participle: 'shone', difficulty: 'medium'},
+            {base: 'show', past: 'showed', participle: 'shown', difficulty: 'easy'},
+            {base: 'shut', past: 'shut', participle: 'shut', difficulty: 'hard'},
+            {base: 'sing', past: 'sang', participle: 'sung', difficulty: 'medium'},
+            {base: 'sink', past: 'sank', participle: 'sunk', difficulty: 'medium'},
+            {base: 'sit', past: 'sat', participle: 'sat', difficulty: 'easy'},
+            {base: 'sleep', past: 'slept', participle: 'slept', difficulty: 'easy'},
+            {base: 'speak', past: 'spoke', participle: 'spoken', difficulty: 'medium'},
+            {base: 'spell', past: 'spelt', participle: 'spelt', difficulty: 'medium'},
+            {base: 'spend', past: 'spent', participle: 'spent', difficulty: 'easy'},
+            {base: 'stand', past: 'stood', participle: 'stood', difficulty: 'easy'},
+            {base: 'steal', past: 'stole', participle: 'stolen', difficulty: 'medium'},
+            {base: 'stick', past: 'stuck', participle: 'stuck', difficulty: 'medium'},
+            {base: 'sting', past: 'stung', participle: 'stung', difficulty: 'medium'},
+            {base: 'stink', past: 'stank', participle: 'stunk', difficulty: 'medium'},
+            {base: 'strike', past: 'struck', participle: 'struck', difficulty: 'hard'},
+            {base: 'swim', past: 'swam', participle: 'swum', difficulty: 'medium'},
+            {base: 'swing', past: 'swung', participle: 'swung', difficulty: 'medium'},
+            {base: 'take', past: 'took', participle: 'taken', difficulty: 'easy'},
+            {base: 'teach', past: 'taught', participle: 'taught', difficulty: 'easy'},
+            {base: 'tear', past: 'tore', participle: 'torn', difficulty: 'medium'},
+            {base: 'tell', past: 'told', participle: 'told', difficulty: 'easy'},
+            {base: 'think', past: 'thought', participle: 'thought', difficulty: 'easy'},
+            {base: 'throw', past: 'threw', participle: 'thrown', difficulty: 'medium'},
+            {base: 'understand', past: 'understood', participle: 'understood', difficulty: 'easy'},
+            {base: 'wake', past: 'woke', participle: 'woken', difficulty: 'medium'},
+            {base: 'wear', past: 'wore', participle: 'worn', difficulty: 'easy'},
+            {base: 'win', past: 'won', participle: 'won', difficulty: 'easy'},
+            {base: 'write', past: 'wrote', participle: 'written', difficulty: 'easy'}
+        ];
+
+        // Quiz state
+        let currentSection = null;
+        let currentMode = '';
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let selectedAnswer = null;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+        let answeredCurrent = false;
+        let isMuted = false;
+
+        // Audio context for sound effects
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playCorrectSound() {
+            if (isMuted) return;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.4);
+        }
+
+        function playIncorrectSound() {
+            if (isMuted) return;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.15);
+            
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const muteBtn = document.getElementById('muteToggle');
+            if (isMuted) {
+                muteBtn.classList.add('muted');
+                muteBtn.title = 'Sound off';
+            } else {
+                muteBtn.classList.remove('muted');
+                muteBtn.title = 'Sound on';
+            }
+        }
+
+        function selectSection(section) {
+            currentSection = section;
+            document.getElementById('sectionScreen').classList.add('hidden');
+            document.getElementById('modeScreen').classList.remove('hidden');
+            document.getElementById('modeTitle').textContent = `Section ${section} - Choose Your Mode`;
+        }
+
+        function backToSections() {
+            currentSection = null;
+            document.getElementById('modeScreen').classList.add('hidden');
+            document.getElementById('sectionScreen').classList.remove('hidden');
+        }
+
+        // Initialize with animated number counters
+        loadStats();
+        animateStats();
+
+        function animateStats() {
+            const statValues = document.querySelectorAll('.stat-card .value');
+            statValues.forEach(el => {
+                const finalValue = el.textContent;
+                if (!isNaN(parseInt(finalValue))) {
+                    const target = parseInt(finalValue);
+                    let current = 0;
+                    const increment = target / 30;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            el.textContent = target + (finalValue.includes('%') ? '%' : '');
+                            clearInterval(timer);
+                        } else {
+                            el.textContent = Math.floor(current) + (finalValue.includes('%') ? '%' : '');
+                        }
+                    }, 30);
+                }
+            });
+        }
+
+        function startQuiz(mode) {
+            currentMode = mode;
+            currentQuestionIndex = 0;
+            selectedAnswer = null;
+            correctAnswers = 0;
+            incorrectAnswers = 0;
+            answeredCurrent = false;
+            
+            // Generate questions based on section
+            const verbSet = currentSection === 1 ? SECTION1_VERBS : SECTION2_VERBS;
+            questions = generateQuestions(mode, verbSet.length, verbSet);
+            
+            // Show quiz screen
+            document.getElementById('modeScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            
+            // Display first question
+            displayQuestion();
+        }
+
+        function generateQuestions(mode, count, verbSet) {
+            const shuffled = [...verbSet].sort(() => Math.random() - 0.5);
+            const selected = shuffled.slice(0, count);
+            
+            return selected.map(verb => {
+                let questionType = mode;
+                if (mode === 'mixed') {
+                    questionType = Math.random() < 0.5 ? 'base-to-past' : 'base-to-participle';
+                }
+                
+                const question = {
+                    verb: verb,
+                    type: questionType,
+                    prompt: '',
+                    correctAnswer: '',
+                    options: []
+                };
+                
+                if (questionType === 'base-to-past') {
+                    question.prompt = `What is the past simple of "${verb.base}"?`;
+                    question.correctAnswer = verb.past;
+                } else {
+                    question.prompt = `What is the past participle of "${verb.base}"?`;
+                    question.correctAnswer = verb.participle;
+                }
+                
+                // Generate options
+                question.options = generateOptions(verb, questionType);
+                
+                return question;
+            });
+        }
+
+        function generateOptions(correctVerb, type) {
+            const correctAnswer = type === 'base-to-past' ? correctVerb.past : correctVerb.participle;
+            const options = [correctAnswer];
+            
+            // Add 3 wrong answers from other verbs in same section
+            const verbSet = currentSection === 1 ? SECTION1_VERBS : SECTION2_VERBS;
+            const otherVerbs = verbSet.filter(v => v.base !== correctVerb.base);
+            const shuffledOthers = otherVerbs.sort(() => Math.random() - 0.5);
+            
+            for (let i = 0; i < shuffledOthers.length && options.length < 4; i++) {
+                const wrongAnswer = type === 'base-to-past' ? shuffledOthers[i].past : shuffledOthers[i].participle;
+                if (!options.includes(wrongAnswer)) {
+                    options.push(wrongAnswer);
+                }
+            }
+            
+            // Shuffle options
+            return options.sort(() => Math.random() - 0.5);
+        }
+
+        function displayQuestion() {
+            const question = questions[currentQuestionIndex];
+            selectedAnswer = null;
+            answeredCurrent = false;
+            
+            // Update progress
+            const progress = ((currentQuestionIndex) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1}/${questions.length}`;
+            document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+            
+            // Display question
+            document.getElementById('questionText').textContent = question.prompt;
+            
+            // Display options
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectOption(index);
+                optionsContainer.appendChild(btn);
+            });
+            
+            // Reset feedback and button
+            document.getElementById('feedbackContainer').innerHTML = '';
+            document.getElementById('actionBtn').textContent = 'Submit Answer';
+            document.getElementById('actionBtn').disabled = false;
+        }
+
+        function selectOption(index) {
+            if (answeredCurrent) return;
+            
+            answeredCurrent = true;
+            selectedAnswer = index;
+            const question = questions[currentQuestionIndex];
+            const selectedOption = question.options[selectedAnswer];
+            const isCorrect = selectedOption === question.correctAnswer;
+            
+            if (isCorrect) {
+                correctAnswers++;
+                playCorrectSound();
+            } else {
+                incorrectAnswers++;
+                playIncorrectSound();
+            }
+            
+            // Update UI
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                if (question.options[i] === question.correctAnswer) {
+                    btn.classList.add('correct');
+                } else if (i === selectedAnswer) {
+                    btn.classList.add('incorrect');
+                }
+            });
+            
+            // Auto-advance after 1.5 seconds
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex >= questions.length) {
+                    showResults();
+                } else {
+                    displayQuestion();
+                }
+            }, 1500);
+        }
+
+
+
+        function showResults() {
+            // Update stats
+            updateStats(correctAnswers);
+            
+            // Show results screen
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            // Display results
+            const percentage = Math.round((correctAnswers / questions.length) * 100);
+            document.getElementById('finalScore').textContent = correctAnswers;
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('incorrectCount').textContent = incorrectAnswers;
+            document.getElementById('percentageScore').textContent = percentage + '%';
+            
+            // Message based on score with animated emoji
+            let message = '';
+            if (percentage === 100) {
+                message = '🎆 Perfect Score! You\'re a Master!';
+            } else if (percentage >= 80) {
+                message = '⭐ Excellent Work! Almost Perfect!';
+            } else if (percentage >= 60) {
+                message = '🌟 Good Job! Keep it up!';
+            } else if (percentage >= 40) {
+                message = '💪 Keep Practicing! You\'re improving!';
+            } else {
+                message = '📚 Keep Learning! Practice makes perfect!';
+            }
+            document.getElementById('resultMessage').textContent = message;
+            
+            // Trigger confetti effect for high scores
+            if (percentage >= 80) {
+                createConfetti();
+            }
+        }
+
+        function resetQuiz() {
+            startQuiz(currentMode);
+        }
+
+        function changeSection() {
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('sectionScreen').classList.remove('hidden');
+            currentSection = null;
+        }
+
+        function loadStats() {
+            const stats = {
+                totalAttempts: 0,
+                bestScore: 0,
+                totalScore: 0
+            };
+            
+            document.getElementById('totalAttempts').textContent = stats.totalAttempts;
+            document.getElementById('bestScore').textContent = stats.bestScore;
+            document.getElementById('avgScore').textContent = stats.totalAttempts > 0 
+                ? Math.round((stats.totalScore / stats.totalAttempts / 20) * 100) + '%' 
+                : '0%';
+        }
+
+        function updateStats(score) {
+            const stats = {
+                totalAttempts: parseInt(document.getElementById('totalAttempts').textContent) + 1,
+                bestScore: Math.max(parseInt(document.getElementById('bestScore').textContent), score),
+                totalScore: 0
+            };
+            
+            // Calculate new total score
+            const currentAvg = document.getElementById('avgScore').textContent;
+            const currentAvgNum = parseFloat(currentAvg) / 100;
+            const previousTotal = currentAvgNum * (stats.totalAttempts - 1) * 20;
+            stats.totalScore = previousTotal + score;
+            
+            document.getElementById('totalAttempts').textContent = stats.totalAttempts;
+            document.getElementById('bestScore').textContent = stats.bestScore;
+            document.getElementById('avgScore').textContent = Math.round((stats.totalScore / stats.totalAttempts / 20) * 100) + '%';
+        }
+
+        // Confetti effect for celebrations
+        function createConfetti() {
+            const colors = ['#6366f1', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
+            const confettiCount = 50;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.style.position = 'fixed';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.top = '-10px';
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = Math.random() * 10 + 5 + 'px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.opacity = Math.random() * 0.5 + 0.5;
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    confetti.style.pointerEvents = 'none';
+                    confetti.style.zIndex = '9999';
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    
+                    document.body.appendChild(confetti);
+                    
+                    const duration = Math.random() * 3000 + 2000;
+                    const startLeft = parseFloat(confetti.style.left);
+                    const drift = (Math.random() - 0.5) * 100;
+                    
+                    const animation = confetti.animate([
+                        { transform: `translateY(0) rotate(0deg)`, left: startLeft + '%' },
+                        { transform: `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 720 - 360}deg)`, left: (startLeft + drift) + '%' }
+                    ], {
+                        duration: duration,
+                        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                    });
+                    
+                    animation.onfinish = () => confetti.remove();
+                }, i * 30);
+            }
+        }
+    </script>
+</body>
+</html>
