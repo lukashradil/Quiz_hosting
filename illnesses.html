@@ -1,0 +1,664 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Heart, 
+  Activity, 
+  CheckCircle2, 
+  XCircle, 
+  Thermometer, 
+  Meh, 
+  Frown, 
+  Smile, 
+  Eye, 
+  ArrowRight, 
+  RefreshCcw,
+  Zap,
+  Pill,
+  CloudSnow,
+  BookOpen,
+  Volume2,
+  HelpCircle,
+  Cpu,
+  ShieldAlert,
+  Moon,
+  Sun,
+  Coffee,
+  Ghost
+} from 'lucide-react';
+
+const QuizApp = () => {
+  const [gameState, setGameState] = useState('start'); // start, playing, results
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [isAnswered, setIsAnswered] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [showHint, setShowHint] = useState(false);
+  const [shake, setShake] = useState(false);
+  
+  // New state to hold the randomized questions
+  const [activeQuestions, setActiveQuestions] = useState([]);
+
+  // Text-to-Speech Function
+  const speak = (text) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-GB'; // British English for Project textbook
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Helper: Fisher-Yates Shuffle Algorithm
+  const shuffleArray = (array) => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  };
+
+  // Comprehensive Question Data from Project 3 Workbook (Unit 6)
+  const sourceQuestions = [
+    // --- GRAMMAR & FEELINGS (I'm...) ---
+    {
+      type: 'grammar',
+      category: 'Feeling',
+      prompt: "Complete the sentence:",
+      word: "Hungry",
+      context: "___ hungry.",
+      correct: "I'm",
+      options: ["I'm", "I've got", "My"],
+      explanation: "Hungry is an adjective. We use 'I am'.",
+      hint: "Hladový",
+      pronounce: "I'm hungry",
+      icon: <Activity className="w-10 h-10 text-cyan-400" />
+    },
+    {
+      type: 'grammar',
+      category: 'Feeling',
+      prompt: "Complete the sentence:",
+      word: "Thirsty",
+      context: "___ thirsty.",
+      correct: "I'm",
+      options: ["I'm", "I've got", "My"],
+      explanation: "You need water. It's a feeling.",
+      hint: "Žíznivý",
+      pronounce: "I'm thirsty",
+      icon: <Coffee className="w-10 h-10 text-blue-400" />
+    },
+    {
+      type: 'grammar',
+      category: 'Feeling',
+      prompt: "Complete the sentence:",
+      word: "Bored",
+      context: "___ bored.",
+      correct: "I'm",
+      options: ["I'm", "I've got", "My"],
+      explanation: "You are not interested.",
+      hint: "Znuděný",
+      pronounce: "I'm bored",
+      icon: <Ghost className="w-10 h-10 text-slate-400" />
+    },
+    {
+      type: 'grammar',
+      category: 'Feeling',
+      prompt: "Complete the sentence:",
+      word: "Hot",
+      context: "___ hot.",
+      correct: "I'm",
+      options: ["I'm", "I've got", "My"],
+      explanation: "Opposite of cold. It describes you.",
+      hint: "Je mi horko",
+      pronounce: "I'm hot",
+      icon: <Sun className="w-10 h-10 text-orange-400" />
+    },
+    {
+      type: 'grammar',
+      category: 'Feeling',
+      prompt: "Complete the sentence:",
+      word: "Tired",
+      context: "___ tired.",
+      correct: "I'm",
+      options: ["I'm", "I've got", "My"],
+      explanation: "You need to sleep.",
+      hint: "Unavený",
+      pronounce: "I'm tired",
+      icon: <Moon className="w-10 h-10 text-indigo-400" />
+    },
+
+    // --- ILLNESSES (I've got...) ---
+    {
+      type: 'illness',
+      category: 'Illness',
+      prompt: "What's the matter?",
+      word: "Headache",
+      context: "___ a headache.",
+      correct: "I've got",
+      options: ["I'm", "I've got", "My"],
+      explanation: "For illnesses/pains, we use 'I have got'.",
+      hint: "Bolest hlavy",
+      pronounce: "I've got a headache",
+      icon: <Zap className="w-10 h-10 text-yellow-400" />
+    },
+    {
+      type: 'illness',
+      category: 'Illness',
+      prompt: "What's the matter?",
+      word: "A Cold",
+      context: "___ a cold.",
+      correct: "I've got",
+      options: ["I'm", "I've got", "My"],
+      explanation: "Sneezing and coughing = A cold.",
+      hint: "Rýma / Nachlazení",
+      pronounce: "I've got a cold",
+      icon: <CloudSnow className="w-10 h-10 text-cyan-200" />
+    },
+    {
+      type: 'illness',
+      category: 'Illness',
+      prompt: "What's the matter?",
+      word: "Sore Throat",
+      context: "___ a sore throat.",
+      correct: "I've got",
+      options: ["I'm", "I've got", "My"],
+      explanation: "Your throat hurts when you speak.",
+      hint: "Bolest v krku",
+      pronounce: "I've got a sore throat",
+      icon: <Activity className="w-10 h-10 text-pink-500" />
+    },
+    {
+      type: 'illness',
+      category: 'Illness',
+      prompt: "What's the matter?",
+      word: "A Spot",
+      context: "___ a spot on my face.",
+      correct: "I've got",
+      options: ["I'm", "I've got", "My"],
+      explanation: "A red mark on the skin.",
+      hint: "Pupínek",
+      pronounce: "I've got a spot",
+      icon: <CheckCircle2 className="w-10 h-10 text-red-400" />
+    },
+    {
+      type: 'illness',
+      category: 'Illness',
+      prompt: "What's the matter?",
+      word: "Toothache",
+      context: "___ toothache.",
+      correct: "I've got",
+      options: ["I'm", "I've got", "My"],
+      explanation: "Pain in your tooth.",
+      hint: "Bolest zubu",
+      pronounce: "I've got toothache",
+      icon: <Frown className="w-10 h-10 text-orange-300" />
+    },
+
+    // --- BODY PARTS (My... hurts/itches) ---
+    {
+      type: 'body',
+      category: 'Body',
+      prompt: "Describe the problem:",
+      word: "Back",
+      context: "___ back hurts.",
+      correct: "My",
+      options: ["I'm", "I've got", "My"],
+      explanation: "We use 'My' with body parts.",
+      hint: "Moje záda",
+      pronounce: "My back hurts",
+      icon: <Activity className="w-10 h-10 text-red-500" />
+    },
+    {
+      type: 'body',
+      category: 'Body',
+      prompt: "Describe the problem:",
+      word: "Knee / Itch",
+      context: "___ knee itches.",
+      correct: "My",
+      options: ["I'm", "I've got", "My"],
+      explanation: "You want to scratch it.",
+      hint: "Moje koleno",
+      pronounce: "My knee itches",
+      icon: <Zap className="w-10 h-10 text-purple-400" />
+    },
+    {
+      type: 'body',
+      category: 'Body',
+      prompt: "Describe the problem:",
+      word: "Ankle",
+      context: "___ ankle hurts.",
+      correct: "My",
+      options: ["I'm", "I've got", "My"],
+      explanation: "The joint above your foot.",
+      hint: "Můj kotník",
+      pronounce: "My ankle hurts",
+      icon: <Activity className="w-10 h-10 text-yellow-500" />
+    },
+
+    // --- UNSCRAMBLE (Ex 2) ---
+    {
+      type: 'unscramble',
+      category: 'Data Breach',
+      prompt: "Unscramble the word:",
+      word: "SRUHT",
+      context: "My ankle ____.",
+      correct: "Hurts",
+      options: ["Huts", "Rust", "Hurts", "Thrus"],
+      explanation: "SRUHT = HURTS",
+      hint: "Bolí",
+      pronounce: "Hurts",
+      icon: <ShieldAlert className="w-10 h-10 text-red-600" />
+    },
+    {
+      type: 'unscramble',
+      category: 'Data Breach',
+      prompt: "Unscramble the word:",
+      word: "SCTIEH",
+      context: "My foot ____.",
+      correct: "Itches",
+      options: ["Itches", "Chest", "Site", "Cities"],
+      explanation: "SCTIEH = ITCHES",
+      hint: "Svědí",
+      pronounce: "Itches",
+      icon: <Zap className="w-10 h-10 text-yellow-400" />
+    },
+    {
+      type: 'unscramble',
+      category: 'Data Breach',
+      prompt: "Unscramble the word:",
+      word: "ELFE",
+      context: "I don't ____ well.",
+      correct: "Feel",
+      options: ["Flee", "Leaf", "Feel", "Eel"],
+      explanation: "ELFE = FEEL",
+      hint: "Cítit se",
+      pronounce: "Feel",
+      icon: <Heart className="w-10 h-10 text-pink-600" />
+    },
+
+    // --- ADVICE (Ex 3) ---
+    {
+      type: 'advice',
+      category: 'Protocol',
+      prompt: "System Alert: User is VERY COLD.",
+      word: "Action required:",
+      context: "You should ___.",
+      correct: "put a jumper on",
+      options: ["put a jumper on", "go to bed", "drink it"],
+      explanation: "Warm clothes help when you are cold.",
+      hint: "Vzít si svetr",
+      pronounce: "Put a jumper on",
+      icon: <CloudSnow className="w-10 h-10 text-cyan-300" />
+    },
+    {
+      type: 'advice',
+      category: 'Protocol',
+      prompt: "System Alert: User has EXAMS.",
+      word: "Problem: Worried about exams.",
+      context: "You should ___.",
+      correct: "study more",
+      options: ["study more", "take a painkiller", "eat sweets"],
+      explanation: "Preparation helps anxiety.",
+      hint: "Více studovat",
+      pronounce: "Study more",
+      icon: <BookOpen className="w-10 h-10 text-green-400" />
+    },
+    {
+      type: 'advice',
+      category: 'Protocol',
+      prompt: "System Alert: MILK IS OLD.",
+      word: "Action required:",
+      context: "You ___ drink it.",
+      correct: "shouldn't",
+      options: ["should", "shouldn't", "must"],
+      explanation: "Old milk is dangerous.",
+      hint: "Neměl bys",
+      pronounce: "You shouldn't drink it",
+      icon: <ShieldAlert className="w-10 h-10 text-orange-500" />
+    },
+    {
+      type: 'advice',
+      category: 'Protocol',
+      prompt: "System Alert: HEADACHE detected.",
+      word: "Action required:",
+      context: "You should ___.",
+      correct: "take a painkiller",
+      options: ["take a painkiller", "do sports", "study more"],
+      explanation: "Medicine stops pain.",
+      hint: "Vzít si prášek na bolest",
+      pronounce: "Take a painkiller",
+      icon: <Pill className="w-10 h-10 text-red-500" />
+    },
+    {
+      type: 'advice',
+      category: 'Protocol',
+      prompt: "System Alert: INSIDE ALL DAY.",
+      word: "Advice:",
+      context: "You should ___.",
+      correct: "do some outdoor sports",
+      options: ["do some outdoor sports", "go to bed", "eat sweets"],
+      explanation: "Fresh air is good for you.",
+      hint: "Sportovat venku",
+      pronounce: "Do some outdoor sports",
+      icon: <Sun className="w-10 h-10 text-yellow-300" />
+    }
+  ];
+
+  // Initialize and Randomize Game Data
+  const startNewGame = () => {
+    // 1. Shuffle the order of questions
+    const shuffledQuestions = shuffleArray(sourceQuestions);
+
+    // 2. Shuffle the options within each question
+    const randomizedQuestions = shuffledQuestions.map(q => ({
+      ...q,
+      options: shuffleArray(q.options)
+    }));
+
+    setActiveQuestions(randomizedQuestions);
+    setGameState('playing');
+    setCurrentQuestionIndex(0);
+    setScore(0);
+    setStreak(0);
+    setSelectedOption(null);
+    setIsAnswered(false);
+    setFeedback('');
+    setShowHint(false);
+  };
+
+  const handleAnswer = (option) => {
+    if (isAnswered) return;
+    
+    setSelectedOption(option);
+    setIsAnswered(true);
+    setShowHint(false);
+    
+    const isCorrect = option === activeQuestions[currentQuestionIndex].correct;
+    
+    if (isCorrect) {
+      setScore(score + 10 + (streak * 5));
+      setStreak(streak + 1);
+      setFeedback('ACCESS GRANTED');
+    } else {
+      setStreak(0);
+      setFeedback(activeQuestions[currentQuestionIndex].explanation);
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+    }
+  };
+
+  const nextQuestion = () => {
+    if (currentQuestionIndex < activeQuestions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelectedOption(null);
+      setIsAnswered(false);
+      setFeedback('');
+      setShowHint(false);
+    } else {
+      setGameState('results');
+    }
+  };
+
+  const restartGame = () => {
+    setGameState('start');
+  };
+
+  // --- START SCREEN ---
+  if (gameState === 'start') {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 font-mono">
+        <div className="relative w-full max-w-md">
+          {/* Animated Background Elements */}
+          <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+          <div className="absolute top-0 -right-4 w-72 h-72 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+          
+          <div className="relative bg-slate-900/80 backdrop-blur-xl border border-slate-700 p-8 rounded-2xl shadow-2xl overflow-hidden">
+            {/* Scanning Line Animation */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50 animate-scan"></div>
+            
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-800 border border-cyan-500/50 mb-6 shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+                <Cpu className="w-10 h-10 text-cyan-400" />
+              </div>
+              <h1 className="text-4xl font-bold text-white mb-2 tracking-wider drop-shadow-lg">BIO-SCAN <span className="text-cyan-400">v3.0</span></h1>
+              <p className="text-slate-400 text-sm">MEDICAL LANGUAGE PROTOCOL</p>
+            </div>
+
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 border border-slate-700">
+                <Activity className="text-pink-500" />
+                <span className="text-slate-300 text-sm">Diagnose Illnesses</span>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 border border-slate-700">
+                <Zap className="text-yellow-400" />
+                <span className="text-slate-300 text-sm">Report Symptoms</span>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 border border-slate-700">
+                <ShieldAlert className="text-cyan-400" />
+                <span className="text-slate-300 text-sm">Issue Protocols (Advice)</span>
+              </div>
+            </div>
+
+            <button 
+              onClick={startNewGame}
+              className="group w-full relative overflow-hidden bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(8,145,178,0.5)] hover:shadow-[0_0_30px_rgba(8,145,178,0.7)]"
+            >
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                INITIALIZE SYSTEM <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- RESULTS SCREEN ---
+  if (gameState === 'results') {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 font-mono">
+        <div className="relative w-full max-w-md bg-slate-900/90 backdrop-blur-xl border border-slate-700 p-8 rounded-2xl shadow-2xl text-center">
+          <div className="absolute inset-0 overflow-hidden rounded-2xl">
+             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+          </div>
+
+          <div className="relative z-10">
+            <div className="inline-block p-4 rounded-full bg-slate-800 border border-green-500/50 mb-6 shadow-[0_0_30px_rgba(34,197,94,0.3)]">
+              <CheckCircle2 className="w-16 h-16 text-green-400" />
+            </div>
+            
+            <h2 className="text-3xl font-bold text-white mb-2">SCAN COMPLETE</h2>
+            <p className="text-slate-400 text-sm mb-8 tracking-widest">DIAGNOSTIC REPORT GENERATED</p>
+
+            <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2 filter drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]">
+              {score}
+            </div>
+            <div className="text-slate-500 text-xs uppercase tracking-widest mb-8">Protocol Points</div>
+
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                <div className="text-cyan-400 font-bold text-xl">{activeQuestions.length}</div>
+                <div className="text-[10px] text-slate-500 uppercase mt-1">Modules Cleared</div>
+              </div>
+              <div className="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                <div className="text-pink-500 font-bold text-xl">{Math.round((score / (activeQuestions.length * 10)) * 100)}%</div>
+                <div className="text-[10px] text-slate-500 uppercase mt-1">Accuracy</div>
+              </div>
+            </div>
+
+            <button 
+              onClick={restartGame}
+              className="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-cyan-500 text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2"
+            >
+              <RefreshCcw className="w-4 h-4" /> REBOOT SYSTEM
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback if activeQuestions hasn't loaded for some reason (rare edge case on init)
+  if (activeQuestions.length === 0 && gameState === 'playing') {
+      return <div>Loading...</div>;
+  }
+  
+  const currentQ = activeQuestions[currentQuestionIndex];
+  const progress = ((currentQuestionIndex + 1) / activeQuestions.length) * 100;
+
+  // --- GAME SCREEN ---
+  return (
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 font-mono text-slate-200">
+      <style>{`
+        @keyframes scan {
+          0% { top: 0%; opacity: 0; }
+          50% { opacity: 1; }
+          100% { top: 100%; opacity: 0; }
+        }
+        .animate-scan {
+          animation: scan 3s linear infinite;
+        }
+      `}</style>
+
+      <div className={`relative w-full max-w-md bg-slate-900/90 backdrop-blur-xl border border-slate-700 rounded-3xl shadow-2xl overflow-hidden transition-transform duration-100 ${shake ? 'translate-x-[-5px]' : ''}`}>
+        
+        {/* Progress Line */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-slate-800">
+          <div 
+            className="h-full bg-gradient-to-r from-cyan-500 to-blue-600 shadow-[0_0_10px_rgba(6,182,212,0.8)] transition-all duration-500"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+
+        {/* HUD Header */}
+        <div className="flex justify-between items-center p-5 border-b border-slate-800 bg-slate-900/50">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold text-cyan-400 bg-cyan-950/50 px-2 py-1 rounded border border-cyan-800 uppercase tracking-wider">
+              {currentQ.category}
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+             <div className="flex items-center gap-1 text-pink-500">
+                <Heart className={`w-4 h-4 ${streak > 1 ? 'fill-pink-500 animate-pulse' : ''}`} />
+                <span className="text-sm font-bold">{score}</span>
+             </div>
+          </div>
+        </div>
+
+        <div className="p-6">
+          {/* Main Visual Display */}
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-cyan-500/5 rounded-2xl blur-xl"></div>
+            <div className="relative bg-slate-800/50 border border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[160px] text-center group">
+              
+              {/* Icon Container */}
+              <div className="mb-4 p-4 rounded-full bg-slate-900 border border-slate-700 shadow-inner">
+                {currentQ.icon}
+              </div>
+
+              {/* Word/Context Display */}
+              <h2 className="text-sm text-slate-400 uppercase tracking-widest mb-2">{currentQ.prompt}</h2>
+              <div className="text-xl font-bold text-white mb-2">
+                {currentQ.context.split('___').map((part, i, arr) => (
+                  <React.Fragment key={i}>
+                    {part}
+                    {i < arr.length - 1 && (
+                      <span className="inline-block min-w-[60px] border-b-2 border-cyan-500 border-dashed mx-1 animate-pulse text-cyan-400">
+                         {isAnswered && currentQ.correct === selectedOption ? currentQ.correct : '?'}
+                      </span>
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {/* Action Buttons Row */}
+              <div className="flex gap-3 mt-2">
+                {/* Pronunciation Button */}
+                <button 
+                  onClick={() => speak(currentQ.pronounce)}
+                  className="p-2 rounded-full bg-slate-700 hover:bg-cyan-600 text-slate-300 hover:text-white transition-colors border border-slate-600 hover:border-cyan-400"
+                  title="Play Pronunciation"
+                >
+                  <Volume2 className="w-5 h-5" />
+                </button>
+
+                 {/* Hint Button */}
+                <button 
+                  onClick={() => setShowHint(!showHint)}
+                  className={`p-2 rounded-full transition-colors border ${showHint ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50' : 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'}`}
+                  title="Toggle Czech Hint"
+                >
+                  <HelpCircle className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Hint Display */}
+              <div className={`overflow-hidden transition-all duration-300 ${showHint ? 'max-h-10 opacity-100 mt-3' : 'max-h-0 opacity-0 mt-0'}`}>
+                <div className="text-xs font-bold text-yellow-400 flex items-center gap-1 bg-yellow-950/30 px-3 py-1 rounded-full border border-yellow-500/20">
+                   🇨🇿 {currentQ.hint}
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Options */}
+          <div className="space-y-3">
+            {currentQ.options.map((option, idx) => {
+              let btnClass = "w-full p-4 rounded-xl border font-bold text-left transition-all duration-200 relative overflow-hidden group ";
+              
+              if (isAnswered) {
+                if (option === currentQ.correct) {
+                  btnClass += "bg-green-500/10 border-green-500 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.2)]";
+                } else if (option === selectedOption) {
+                  btnClass += "bg-red-500/10 border-red-500 text-red-400";
+                } else {
+                  btnClass += "bg-slate-800/50 border-slate-700 text-slate-500 opacity-50";
+                }
+              } else {
+                btnClass += "bg-slate-800 hover:bg-slate-700 border-slate-700 hover:border-cyan-500 text-slate-300 hover:text-white hover:shadow-[0_0_15px_rgba(6,182,212,0.15)] active:scale-[0.98]";
+              }
+
+              return (
+                <button
+                  key={idx}
+                  onClick={() => handleAnswer(option)}
+                  disabled={isAnswered}
+                  className={btnClass}
+                >
+                  <div className="flex items-center justify-between relative z-10">
+                    <span>{option}</span>
+                    {isAnswered && option === currentQ.correct && <CheckCircle2 className="w-5 h-5" />}
+                    {isAnswered && option === selectedOption && option !== currentQ.correct && <XCircle className="w-5 h-5" />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Feedback & Next */}
+          <div className={`mt-4 transition-all duration-300 ease-in-out ${isAnswered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none absolute'}`}>
+             <div className={`p-3 rounded-lg mb-3 text-sm border ${selectedOption === currentQ.correct ? 'bg-green-950/30 border-green-500/30 text-green-400' : 'bg-red-950/30 border-red-500/30 text-red-400'}`}>
+                <div className="font-bold flex items-center gap-2 mb-1">
+                   {selectedOption === currentQ.correct ? <CheckCircle2 className="w-4 h-4"/> : <ShieldAlert className="w-4 h-4"/>}
+                   {selectedOption === currentQ.correct ? 'PROTOCOL MATCHED' : 'ERROR DETECTED'}
+                </div>
+                {feedback}
+             </div>
+             
+             <button 
+                onClick={nextQuestion}
+                className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 border border-cyan-400/50"
+              >
+                {currentQuestionIndex < activeQuestions.length - 1 ? 'NEXT SEQUENCE' : 'FINALIZE REPORT'} <ArrowRight className="w-4 h-4" />
+              </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default QuizApp;
