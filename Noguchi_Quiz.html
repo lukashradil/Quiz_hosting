@@ -1,334 +1,411 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mount Everest Rubbish Quiz</title>
-    <!-- Load Tailwind CSS for modern styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom styles for the quiz */
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+import React, { useState, useEffect } from 'react';
+import { CheckCircle2, XCircle, BrainCircuit, RefreshCw, ChevronRight, Award, AlertCircle } from 'lucide-react';
+
+const quizData = {
+  partA: [
+    {
+      id: 'a1',
+      text: "1. The board of directors ought {blank} the CEO's exorbitant spending habits much sooner.",
+      verb: "(investigate)",
+      options: ["to investigate", "to have investigated", "investigating"],
+      correct: "to have investigated",
+      explanation: "Past regrets or unfulfilled past obligations require a perfect infinitive: 'ought to' + 'have' + past participle."
+    },
+    {
+      id: 'a2',
+      text: "2. Given the impending audit, the accounting department had better {blank} all those discrepancies immediately.",
+      verb: "(reconcile)",
+      options: ["reconcile", "to reconcile", "reconciling"],
+      correct: "reconcile",
+      explanation: "The phrase 'had better' is always followed by a bare infinitive (infinitive without 'to')."
+    },
+    {
+      id: 'a3',
+      text: "3. The keynote speaker was supposed {blank} an hour ago, yet the auditorium remains completely empty.",
+      verb: "(arrive)",
+      options: ["to arrive", "arriving", "arrive"],
+      correct: "to arrive",
+      explanation: "'Be supposed' is followed by a standard to-infinitive when referring to an expected action."
+    },
+    {
+      id: 'a4',
+      text: "4. Despite the widespread market crash, our primary competitor seems {blank} a period of unprecedented growth right now.",
+      verb: "(experience)",
+      options: ["to experience", "to be experiencing", "experiencing"],
+      correct: "to be experiencing",
+      explanation: "To show an action happening 'at the exact moment' with 'seem', use the continuous infinitive ('to be' + -ing)."
+    },
+    {
+      id: 'a5',
+      text: "5. The refugee camp was severely overcrowded; there was literally nowhere for the new arrivals {blank}.",
+      verb: "(shelter)",
+      options: ["sheltering", "shelter", "to shelter"],
+      correct: "to shelter",
+      explanation: "Pronouns like 'nowhere', 'anywhere', and 'somewhere' are followed by a to-infinitive."
+    },
+    {
+      id: 'a6',
+      text: "6. The veteran diplomat is highly sensitive and absolutely loathes {blank} by junior staff members during negotiations.",
+      verb: "(contradict)",
+      options: ["contradicting", "being contradicted", "to be contradicted"],
+      correct: "being contradicted",
+      explanation: "Verbs of extreme like/dislike ('loathe', 'hate', 'detest') typically take a gerund. Because the diplomat is receiving the action, it must be a passive gerund ('being' + past participle)."
+    },
+    {
+      id: 'a7',
+      text: "7. I would love {blank} the maestro perform live, but sadly, he passed away before I was even born.",
+      verb: "(witness)",
+      options: ["to witness", "witnessing", "to have witnessed"],
+      correct: "to have witnessed",
+      explanation: "'Would love' + perfect infinitive ('to have' + past participle) is used to express an unfulfilled desire or missed opportunity in the past."
+    },
+    {
+      id: 'a8',
+      text: "8. There is absolutely no point {blank} the contract at this late stage; the deadline passed yesterday.",
+      verb: "(amend)",
+      options: ["to amend", "amending", "amend"],
+      correct: "amending",
+      explanation: "The phrase 'there is no point' is a fixed expression that always takes a gerund (-ing form)."
+    },
+    {
+      id: 'a9',
+      text: "9. In high-stakes corporate espionage, it is crucial for whistleblowers {blank} by adequate legal safeguards.",
+      verb: "(protect)",
+      options: ["to protect", "being protected", "to be protected"],
+      correct: "to be protected",
+      explanation: "The structure 'Adjective + for [noun]' requires an infinitive. Since the whistleblowers receive the action, it requires a passive infinitive ('to be' + past participle)."
+    },
+    {
+      id: 'a10',
+      text: "10. The highly anticipated emergency committee isn't due {blank} until the third quarter of the fiscal year.",
+      verb: "(reconvene)",
+      options: ["reconvening", "to reconvene", "reconvene"],
+      correct: "to reconvene",
+      explanation: "When 'due' means 'expected or scheduled to happen', it is followed by a to-infinitive."
+    }
+  ],
+  partB: [
+    {
+      id: 'b1',
+      text: "1. Unauthorised personnel are {blank} to access the secure server facility.",
+      options: ["not allowed", "not permitted", "Both are possible"],
+      correct: "Both are possible",
+      explanation: "Both phrases correctly express prohibition, though 'not permitted' is slightly more formal."
+    },
+    {
+      id: 'b2',
+      text: "2. You {blank} to the lawyer's counsel before signing that draconian NDA, but the damage is done now.",
+      options: ["should listen", "should have listened", "Both are possible"],
+      correct: "should have listened",
+      explanation: "Because the sentence refers to a past regret/mistake ('the damage is done now'), you must use 'should have' + past participle."
+    },
+    {
+      id: 'b3',
+      text: "3. We {blank} a 500-page dossier; the client just glanced at the cover and signed the deal anyway.",
+      options: ["didn't need to compile", "needn't have compiled", "Both are possible"],
+      correct: "needn't have compiled",
+      explanation: "'Needn't have done' means you DID the action, but it turned out to be unnecessary. 'Didn't need to do' implies it wasn't necessary, so you probably didn't do it."
+    },
+    {
+      id: 'b4',
+      text: "4. The macroeconomic projections {blank} somewhat pessimistic for the next quarter.",
+      options: ["look", "seem", "Both are possible"],
+      correct: "Both are possible",
+      explanation: "Both 'look' and 'seem' can be used as copular verbs to describe the appearance or impression of something."
+    },
+    {
+      id: 'b5',
+      text: "5. The defendant's testimony sounded {blank} it had been meticulously rehearsed beforehand.",
+      options: ["as if", "as though", "Both are possible"],
+      correct: "Both are possible",
+      explanation: "'As if' and 'as though' are interchangeable conjunctions used to describe how a situation seems."
+    },
+    {
+      id: 'b6',
+      text: "6. Wait, be quiet for a moment. I {blank} a faint mechanical whining coming from the engine bay.",
+      options: ["can hear", "am hearing", "Both are possible"],
+      correct: "can hear",
+      explanation: "Verbs of involuntary perception (hear, see, smell, taste) are rarely used in the continuous form. We typically use 'can/could' + bare infinitive."
+    },
+    {
+      id: 'b7',
+      text: "7. This plant-based substitute {blank} authentic Wagyu beef; the culinary illusion is remarkable.",
+      options: ["tastes like", "tastes of", "Both are possible"],
+      correct: "tastes like",
+      explanation: "'Tastes like' is used when comparing one thing to another (a substitute to beef). 'Tastes of' usually means it actually contains that ingredient/flavor."
+    },
+    {
+      id: 'b8',
+      text: "8. Please don't schedule any meetings for me tomorrow morning; I {blank} a symposium in Geneva.",
+      options: ["will be attending", "am attending", "Both are possible"],
+      correct: "Both are possible",
+      explanation: "Both the Future Continuous ('will be attending') and Present Continuous ('am attending') can be used for fixed future arrangements or ongoing future actions."
+    },
+    {
+      id: 'b9',
+      text: "9. Following the massive data breach, the embattled corporation is {blank} declare bankruptcy.",
+      options: ["on the point of", "about to", "Both are possible"],
+      correct: "about to",
+      explanation: "Because 'declare' is an infinitive verb, you must use 'about to'. If you used 'on the point of', it would require a gerund ('on the point of declaring')."
+    },
+    {
+      id: 'b10',
+      text: "10. The prime minister {blank} unveil the new economic stimulus package at dawn tomorrow.",
+      options: ["is to", "is due to", "Both are possible"],
+      correct: "Both are possible",
+      explanation: "Both 'is to' and 'is due to' are perfectly correct for expressing formal, scheduled future events."
+    }
+  ]
+};
+
+export default function App() {
+  const [answers, setAnswers] = useState({});
+  const [showResults, setShowResults] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const totalQuestions = quizData.partA.length + quizData.partB.length;
+  const answeredCount = Object.keys(answers).length;
+  const isComplete = answeredCount === totalQuestions;
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [showResults]);
+
+  const handleSelect = (questionId, option) => {
+    if (showResults) return;
+    setAnswers(prev => ({ ...prev, [questionId]: option }));
+  };
+
+  const handleSubmit = () => {
+    if (!isComplete) return;
+    let newScore = 0;
+    
+    [...quizData.partA, ...quizData.partB].forEach(q => {
+      if (answers[q.id] === q.correct) {
+        newScore++;
+      }
+    });
+    
+    setScore(newScore);
+    setShowResults(true);
+  };
+
+  const resetQuiz = () => {
+    setAnswers({});
+    setShowResults(false);
+    setScore(0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const renderQuestionText = (text, verb) => {
+    const parts = text.split('{blank}');
+    return (
+      <span className="text-lg text-slate-800 leading-relaxed font-medium">
+        {parts[0]}
+        <span className="inline-block px-4 py-1 mx-2 bg-slate-100 border-b-2 border-slate-300 rounded text-slate-400 font-mono text-sm">
+          {verb || "..."}
+        </span>
+        {parts[1]}
+      </span>
+    );
+  };
+
+  const QuestionCard = ({ q, index }) => {
+    const selected = answers[q.id];
+    const isCorrect = selected === q.correct;
+
+    return (
+      <div className={`p-6 mb-6 rounded-2xl border-2 transition-all duration-300 ${
+        showResults 
+          ? isCorrect 
+            ? 'border-emerald-200 bg-emerald-50/30' 
+            : 'border-rose-200 bg-rose-50/30'
+          : selected 
+            ? 'border-indigo-300 bg-indigo-50/10 shadow-md' 
+            : 'border-slate-200 bg-white shadow-sm hover:border-indigo-200'
+      }`}>
         
-        /* Style for the correct answer button */
-        .option-btn.correct {
-            background-color: #22c55e; /* Tailwind green-500 */
-            color: white;
-            border-color: #16a34a; /* Tailwind green-600 */
-        }
-        
-        /* Style for the incorrect answer button */
-        .option-btn.incorrect {
-            background-color: #ef4444; /* Tailwind red-500 */
-            color: white;
-            border-color: #dc2626; /* Tailwind red-600 */
-        }
-
-        /* Style for showing the correct answer when user is wrong */
-        .option-btn.was-correct {
-            background-color: #d1fae5; /* Tailwind green-100 */
-            border-color: #22c55e; /* Tailwind green-500 */
-            color: #166534; /* Tailwind green-800 */
-        }
-
-        /* Disabled state for buttons after an answer is selected */
-        .option-btn:disabled {
-            opacity: 0.8;
-            cursor: not-allowed;
-        }
-
-        /* Hide elements by default */
-        #result-container, #submit-btn {
-            display: none;
-        }
-    </style>
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-
-    <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-2xl">
-        
-        <!-- Quiz Header -->
-        <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">
-            Mount Everest & Rubbish Quiz
-        </h1>
-
-        <!-- Quiz Container -->
-        <div id="quiz-container">
-            <div id="question-counter" class="text-sm text-gray-500 mb-2 text-center"></div>
-            <h2 id="question" class="text-xl sm:text-2xl font-semibold text-gray-900 mb-6 min-h-[60px]">
-                Question text will load here...
-            </h2>
-            
-            <!-- Options Grid -->
-            <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- Option buttons will be dynamically inserted here -->
+        <div className="flex items-start gap-4 mb-6">
+          <div className="flex-1">
+            {renderQuestionText(q.text, q.verb)}
+          </div>
+          {showResults && (
+            <div className="flex-shrink-0 mt-1">
+              {isCorrect ? (
+                <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+              ) : (
+                <XCircle className="w-8 h-8 text-rose-500" />
+              )}
             </div>
-            
-            <!-- Feedback Message -->
-            <p id="feedback" class="mt-5 text-lg font-medium text-center min-h-[30px]"></p>
+          )}
         </div>
 
-        <!-- Result Container (hidden by default) -->
-        <div id="result-container" class="text-center">
-            <h2 id="result-title" class="text-3xl font-bold text-gray-900 mb-4">Quiz Complete!</h2>
-            <p id="result-text" class="text-xl text-gray-700 mb-6">You scored 0 out of 0.</p>
-            <button id="restart-btn" class="w-full sm:w-auto bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors duration-200">
-                Restart Quiz
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {q.options.map((option) => {
+            const isSelected = selected === option;
+            const isTargetCorrect = option === q.correct;
+            
+            let btnClasses = "px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all duration-200 focus:outline-none ";
+            
+            if (showResults) {
+              if (isTargetCorrect) {
+                btnClasses += "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20";
+              } else if (isSelected && !isTargetCorrect) {
+                btnClasses += "bg-rose-100 border-rose-300 text-rose-700";
+              } else {
+                btnClasses += "bg-white border-slate-200 text-slate-400 opacity-60";
+              }
+            } else {
+              if (isSelected) {
+                btnClasses += "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/20 transform scale-[1.02]";
+              } else {
+                btnClasses += "bg-white border-slate-200 text-slate-600 hover:border-indigo-300 hover:bg-indigo-50";
+              }
+            }
+
+            return (
+              <button
+                key={option}
+                onClick={() => handleSelect(q.id, option)}
+                disabled={showResults}
+                className={btnClasses}
+              >
+                {option}
+              </button>
+            );
+          })}
+        </div>
+
+        {showResults && (
+          <div className={`mt-6 p-4 rounded-xl flex gap-3 items-start text-sm ${
+            isCorrect ? 'bg-emerald-100/50 text-emerald-800' : 'bg-rose-100/50 text-rose-800'
+          }`}>
+            <AlertCircle className={`w-5 h-5 shrink-0 mt-0.5 ${isCorrect ? 'text-emerald-600' : 'text-rose-600'}`} />
+            <div>
+              <span className="font-bold block mb-1">
+                {isCorrect ? 'Excellent!' : `Correction: The right answer is "${q.correct}"`}
+              </span>
+              <span className="opacity-90">{q.explanation}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-24">
+      {/* Header */}
+      <div className="bg-indigo-900 text-white pt-16 pb-20 px-6 rounded-b-[3rem] shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
+          <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white blur-3xl"></div>
+          <div className="absolute bottom-0 left-10 w-64 h-64 rounded-full bg-indigo-400 blur-3xl"></div>
+        </div>
+        
+        <div className="max-w-4xl mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <BrainCircuit className="w-10 h-10 text-indigo-300" />
+              <h1 className="text-4xl font-extrabold tracking-tight">Advanced Grammar</h1>
+            </div>
+            <p className="text-indigo-200 text-lg max-w-xl leading-relaxed">
+              Master complex verb structures, perfect infinitives, and nuanced modal phrasing in professional contexts.
+            </p>
+          </div>
+          
+          {/* Progress / Score Widget */}
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-center min-w-[200px] border border-white/20 shadow-inner">
+            {showResults ? (
+              <div>
+                <div className="text-indigo-200 text-sm font-semibold uppercase tracking-wider mb-1">Final Score</div>
+                <div className="text-5xl font-black text-white flex items-center justify-center gap-2">
+                  {score}<span className="text-2xl text-indigo-300 opacity-70">/{totalQuestions}</span>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="text-indigo-200 text-sm font-semibold uppercase tracking-wider mb-2">Progress</div>
+                <div className="w-full bg-black/20 h-3 rounded-full overflow-hidden mb-3">
+                  <div 
+                    className="bg-indigo-400 h-full rounded-full transition-all duration-500 ease-out"
+                    style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}
+                  ></div>
+                </div>
+                <div className="text-white font-medium">
+                  {answeredCount} of {totalQuestions} Answered
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 -mt-10 relative z-20">
+        
+        {/* Results Banner */}
+        {showResults && (
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-10 text-center border-t-4 border-indigo-500 animate-in slide-in-from-bottom-4 fade-in duration-500">
+            <Award className={`w-16 h-16 mx-auto mb-4 ${score > 15 ? 'text-amber-400' : score > 10 ? 'text-indigo-400' : 'text-slate-400'}`} />
+            <h2 className="text-3xl font-bold mb-2 text-slate-800">
+              {score === totalQuestions ? "Flawless Mastery!" : score > 15 ? "Outstanding Work!" : score > 10 ? "Solid Effort!" : "Keep Practicing!"}
+            </h2>
+            <p className="text-slate-600 max-w-lg mx-auto mb-6">
+              You scored {score} out of {totalQuestions}. Review the explanations below to understand the exact mechanics behind these advanced structures.
+            </p>
+            <button 
+              onClick={resetQuiz}
+              className="inline-flex items-center gap-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-6 py-3 rounded-xl font-bold transition-colors"
+            >
+              <RefreshCw className="w-5 h-5" /> Retake Quiz
             </button>
-        </div>
+          </div>
+        )}
 
-        <!-- Next/Submit Button (hidden by default) -->
-        <button id="submit-btn" class="w-full bg-blue-600 text-white mt-6 p-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors duration-200">
-            Next Question
-        </button>
+        {/* Part A */}
+        <section className="mb-12">
+          <div className="flex items-center gap-4 mb-6 pl-2">
+            <div className="bg-indigo-600 text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold text-lg">A</div>
+            <h2 className="text-2xl font-bold text-slate-800">Complex Verb Forms</h2>
+          </div>
+          <div className="space-y-6">
+            {quizData.partA.map((q) => <QuestionCard key={q.id} q={q} />)}
+          </div>
+        </section>
 
+        {/* Part B */}
+        <section className="mb-12">
+          <div className="flex items-center gap-4 mb-6 pl-2 mt-16">
+            <div className="bg-indigo-600 text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold text-lg">B</div>
+            <h2 className="text-2xl font-bold text-slate-800">Nuanced Phrasing & Modals</h2>
+          </div>
+          <div className="space-y-6">
+            {quizData.partB.map((q) => <QuestionCard key={q.id} q={q} />)}
+          </div>
+        </section>
+
+        {/* Submit Action */}
+        {!showResults && (
+          <div className="sticky bottom-8 mt-12 bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-slate-600 font-medium px-4">
+              {isComplete 
+                ? "All questions answered. Ready to see how you did?" 
+                : `You have ${totalQuestions - answeredCount} questions left to answer.`}
+            </div>
+            <button
+              onClick={handleSubmit}
+              disabled={!isComplete}
+              className={`flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 w-full sm:w-auto justify-center ${
+                isComplete 
+                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg hover:shadow-indigo-600/30 hover:-translate-y-1' 
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+              }`}
+            >
+              Evaluate My Answers <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+      </main>
     </div>
-
-    <!-- JavaScript for Quiz Logic -->
-    <script>
-        // --- 1. QUIZ DATA ---
-        // All questions based on the article and vocabulary list
-        const quizData = [
-            // Article Questions
-            {
-                question: "Who is the mountain climber featured in the article?",
-                options: ["Sir Edmund Hillary", "Ken Noguchi", "Tenzing Norgay", "Lewis Gordon Pugh"],
-                correct: "Ken Noguchi"
-            },
-            {
-                question: "What is Ken Noguchi's primary reason for climbing Mount Everest?",
-                options: ["For fun and adventure", "To break a speed record", "To collect rubbish", "To guide other climbers"],
-                correct: "To collect rubbish"
-            },
-            {
-                question: "What nationality is Ken Noguchi?",
-                options: ["Nepali", "Korean", "New Zealander", "Japanese"],
-                correct: "Japanese"
-            },
-            {
-                question: "What is Mount Everest's unfortunate nickname, according to the article?",
-                options: ["The Top of the World", "The Great White Peak", "The World's Highest Rubbish Dump", "The Icy Challenge"],
-                correct: "The World's Highest Rubbish Dump"
-            },
-            {
-                question: "Why doesn't the rubbish decompose (break down) on the mountain?",
-                options: ["It's buried under the snow", "The air is too thin", "It's too cold", "There is no sunlight"],
-                correct: "It's too cold"
-            },
-            {
-                question: "Who were the first two people to climb Mount Everest in 1953?",
-                options: ["Ken Noguchi and his team", "Sir Edmund Hillary and Tenzing Norgay", "Only Sir Edmund Hillary", "It is unknown"],
-                correct: "Sir Edmund Hillary and Tenzing Norgay"
-            },
-            {
-                question: "Which of these is a LARGE item of rubbish found by Ken's team?",
-                options: ["Drinks cans", "Plastic bags", "Empty oxygen bottles", "Food packaging"],
-                correct: "Empty oxygen bottles"
-            },
-            {
-                question: "How much rubbish has Ken's team collected so far?",
-                options: ["Over 500 kg", "About 50 tonnes", "Less than 100 kg", "Exactly 1953 kg"],
-                correct: "Over 500 kg"
-            },
-            {
-                question: "How much OLD rubbish does Ken think is *still* on the mountain?",
-                options: ["None, it's all clean", "About 500 kg", "Over 1000 tonnes", "About 50 tonnes"],
-                correct: "About 50 tonnes"
-            },
-            {
-                question: "How has Ken tried to make people aware of the problem?",
-                options: ["By writing a book", "By giving TV interviews", "By putting rubbish on display in Japan and Korea", "By swimming in the Antarctic"],
-                correct: "By putting rubbish on display in Japan and Korea"
-            },
-            {
-                question: "What rule is in place for climbers *today* to prevent more rubbish?",
-                options: ["They must pay a fine if they leave rubbish", "They are not allowed to bring tents", "They can only climb in small groups", "They must use reusable water bottles"],
-                correct: "They must pay a fine if they leave rubbish"
-            },
-            // Rubbish Vocabulary Questions
-            {
-                question: "What do you call the metal container for a soft drink?",
-                options: ["A plastic bottle", "A foil tray", "A drinks can", "A polystyrene cup"],
-                correct: "A drinks can"
-            },
-            {
-                question: "What is the wrapper from a single piece of candy called?",
-                options: ["A sweet wrapper", "A crisp packet", "Food packaging", "A paper tissue"],
-                correct: "A sweet wrapper"
-            },
-            {
-                question: "What do you call the empty bag that potato chips come in?",
-                options: ["A plastic bag", "A crisp packet", "A foil tray", "A sweet wrapper"],
-                correct: "A crisp packet"
-            },
-            {
-                question: "What is the lightweight, white plastic cup often used for hot drinks called?",
-                options: ["A drinks can", "A plastic bottle", "A polystyrene cup", "A cardboard box"],
-                correct: "A polystyrene cup"
-            },
-            {
-                question: "What do you call the object used to seal the top of a plastic bottle?",
-                options: ["A bottle top", "A sweet wrapper", "A drinks can", "Chewing gum"],
-                correct: "A bottle top"
-            },
-            {
-                question: "What is the general term for the bags, boxes, and wrappers that food is sold in?",
-                options: ["A foil tray", "Food packaging", "A cardboard box", "A plastic bag"],
-                correct: "Food packaging"
-            },
-            {
-                question: "What do you call the disposable, soft paper you use to wipe your nose?",
-                options: ["A sweet wrapper", "A paper tissue", "Chewing gum", "A crisp packet"],
-                correct: "A paper tissue"
-            },
-            {
-                question: "What do you call the disposable, shiny metal tray used for takeaway food?",
-                options: ["A foil tray", "A polystyrene cup", "A drinks can", "A cardboard box"],
-                correct: "A foil tray"
-            },
-            {
-                question: "What material is a shipping box, like the one labeled 'k' in the book, made from?",
-                options: ["Plastic", "Polystyrene", "Foil", "Cardboard"],
-                correct: "Cardboard"
-            }
-        ];
-
-        // --- 2. DOM ELEMENT REFERENCES ---
-        const quizContainer = document.getElementById('quiz-container');
-        const questionCounterEl = document.getElementById('question-counter');
-        const questionEl = document.getElementById('question');
-        const optionsContainer = document.getElementById('options-container');
-        const feedbackEl = document.getElementById('feedback');
-        const submitBtn = document.getElementById('submit-btn');
-        const resultContainer = document.getElementById('result-container');
-        const resultTextEl = document.getElementById('result-text');
-        const restartBtn = document.getElementById('restart-btn');
-
-        // --- 3. QUIZ STATE VARIABLES ---
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let answerSelected = false;
-
-        // --- 4. FUNCTIONS ---
-
-        /**
-         * Loads the current question and its options onto the page.
-         */
-        function loadQuestion() {
-            answerSelected = false;
-            // Clear previous options and feedback
-            optionsContainer.innerHTML = '';
-            feedbackEl.textContent = '';
-            feedbackEl.className = 'mt-5 text-lg font-medium text-center min-h-[30px]';
-            
-            // Hide the 'Next' button
-            submitBtn.style.display = 'none';
-
-            // Get the current question data
-            const currentQuestion = quizData[currentQuestionIndex];
-
-            // Display the question and counter
-            questionEl.textContent = currentQuestion.question;
-            questionCounterEl.textContent = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
-
-            // Create and display the option buttons
-            currentQuestion.options.forEach(optionText => {
-                const button = document.createElement('button');
-                button.textContent = optionText;
-                button.className = 'option-btn w-full p-4 rounded-lg border-2 border-gray-300 text-left text-gray-700 font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-150';
-                button.onclick = () => selectAnswer(button, optionText, currentQuestion.correct);
-                optionsContainer.appendChild(button);
-            });
-        }
-
-        /**
-         * Handles logic when a user clicks an answer option.
-         */
-        function selectAnswer(selectedButton, selectedAnswer, correctAnswer) {
-            if (answerSelected) return; // Prevent multiple clicks
-            answerSelected = true;
-
-            // Disable all option buttons
-            Array.from(optionsContainer.children).forEach(btn => {
-                btn.disabled = true;
-            });
-
-            // Check if the answer is correct
-            if (selectedAnswer === correctAnswer) {
-                score++;
-                selectedButton.classList.add('correct');
-                feedbackEl.textContent = 'Correct!';
-                feedbackEl.classList.add('text-green-600');
-            } else {
-                selectedButton.classList.add('incorrect');
-                feedbackEl.innerHTML = `Wrong. The correct answer was: <br><strong>${correctAnswer}</strong>`;
-                feedbackEl.classList.add('text-red-600');
-
-                // Highlight the correct answer
-                Array.from(optionsContainer.children).forEach(btn => {
-                    if (btn.textContent === correctAnswer) {
-                        btn.classList.add('was-correct');
-                    }
-                });
-            }
-
-            // Show the 'Next' or 'Finish' button
-            if (currentQuestionIndex < quizData.length - 1) {
-                submitBtn.textContent = 'Next Question';
-            } else {
-                submitBtn.textContent = 'Finish Quiz';
-            }
-            submitBtn.style.display = 'block';
-        }
-
-        /**
-         * Shows the final results of the quiz.
-         */
-        function showResults() {
-            quizContainer.style.display = 'none';
-            submitBtn.style.display = 'none';
-            resultContainer.style.display = 'block';
-
-            resultTextEl.textContent = `You scored ${score} out of ${quizData.length}!`;
-            
-            let title = 'Good Job!';
-            if (score / quizData.length < 0.5) title = 'Keep Practicing!';
-            else if (score / quizData.length >= 0.9) title = 'Excellent Work!';
-            
-            document.getElementById('result-title').textContent = title;
-        }
-
-        /**
-         * Resets the quiz state and starts over.
-         */
-        function restartQuiz() {
-            currentQuestionIndex = 0;
-            score = 0;
-            resultContainer.style.display = 'none';
-            quizContainer.style.display = 'block';
-            loadQuestion();
-        }
-
-        // --- 5. EVENT LISTENERS ---
-
-        // 'Next Question' / 'Finish Quiz' button
-        submitBtn.addEventListener('click', () => {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < quizData.length) {
-                loadQuestion();
-            } else {
-                showResults();
-            }
-        });
-
-        // 'Restart Quiz' button
-        restartBtn.addEventListener('click', restartQuiz);
-
-        // --- 6. INITIALIZE QUIZ ---
-        loadQuestion();
-
-    </script>
-</body>
-</html>
+  );
+}
